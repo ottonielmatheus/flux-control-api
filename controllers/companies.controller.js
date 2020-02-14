@@ -8,7 +8,7 @@ const get = (req, res, next) => {
 
             if (error) throw new Error(error);
     
-            conn.query('SELECT * FROM companies WHERE id = ?',
+            conn.query(`SELECT * FROM companies WHERE id = ?`,
             [req.params.id],
             
             (error, results, field) => {
@@ -63,7 +63,7 @@ const add = (req, res, next) => {
             if (error) throw new Error(error);
 
             conn.query('INSERT INTO companies (name, thumbnail, created_at) VALUES (?, ?, ?)',
-            [req.body.name, req.body.thumbnail, new Date()],
+            [req.body.name, req.file.path, new Date()],
             
             (error, results, field) => {
                 
@@ -72,7 +72,11 @@ const add = (req, res, next) => {
 
                 return res.status(201).send({
                     message: "company_created",
-                    company_id: results.resultId
+                    company_added: {
+                        id: results.resultId,
+                        name: req.body.name,
+                        thumbnail: req.file.path
+                    }
                 });
             });
         });
