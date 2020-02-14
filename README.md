@@ -37,8 +37,8 @@ CREATE TABLE vehicles (
   license_plate VARCHAR(10) NOT NULL,
   created_at DATETIME NOT NULL,
   inactive BOOLEAN DEFAULT(0) NOT NULL,
-  company_id INT UNSIGNED,
-  FOREIGN KEY company_id REFERENCES companies.id
+  company_id INT UNSIGNED NOT NULL,
+  FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
 CREATE TABLE users (
@@ -58,7 +58,7 @@ CREATE TABLE flow_records (
   inactive BOOLEAN DEFAULT(0) NOT NULL,
   vehicle_id INT UNSIGNED NOT NULL,
   user_id INT UNSIGNED NOT NULL,
-  FOREIGN KEY vehicle_id REFERENCES vehicles.id,
-  FOREIGN KEY user_id REFERENCES users.registration
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
+  FOREIGN KEY (user_id) REFERENCES users(registration)
 );
 ```
