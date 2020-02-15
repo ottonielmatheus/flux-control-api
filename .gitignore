@@ -1,5 +1,5 @@
 node_modules/
 nodemon.json
-temp/uploads/
+uploads/
 .env
 .env.development

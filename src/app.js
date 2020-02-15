@@ -8,7 +8,7 @@ const companies = require('./routes/companies.route');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/temp/uploads', express.static('temp/uploads'));
+app.use('/temp/uploads', express.static('uploads'));
 app.use('/api/companies', companies);
 
 app.use((req, res, next) => {
