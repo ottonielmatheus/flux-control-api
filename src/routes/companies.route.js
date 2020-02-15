@@ -6,7 +6,7 @@ const CompaniesController = require('../controllers/companies.controller');
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, 'uploads/');
+        callback(null, 'temp/uploads/');
     },
     filename: (req, file, callback) => {
         callback(null, `${new Date().toISOString()}_${file.originalname}`);
