@@ -124,8 +124,6 @@ const change = (req, res, next) => {
 
 const remove = (req, res, next) => {
 
-    
-        
     mysql.getConnection((error, conn) => {
 
         try {
