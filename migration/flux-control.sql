@@ -19,8 +19,9 @@ CREATE TABLE vehicles (
 );
 
 CREATE TABLE users (
-  registration INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  registration INT UNSIGNED PRIMARY KEY,
   name VARCHAR(60) NOT NULL,
+  email VARCHAR(40) NOT NULL UNIQUE,
   password VARCHAR(1000),
   role VARCHAR(15) NOT NULL,
   created_at DATETIME NOT NULL,
