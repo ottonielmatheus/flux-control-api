@@ -25,8 +25,8 @@ const upload = multer({
     fileFilter: imageFilter
 });
 
-router.get('/get/:id', CompaniesController.get);
-router.get('/search', CompaniesController.search);
+router.get('/', CompaniesController.search);
+router.get('/:id', CompaniesController.get);
 router.post('/add', upload.single('thumbnail'), CompaniesController.add);
 router.patch('/change/:id', CompaniesController.change);
 router.delete('/remove/:id', CompaniesController.remove);
