@@ -4,12 +4,16 @@ const config = require('./config/config');
 const app = express();
 
 const companies = require('./routes/companies.route');
+const vehicles = require('./routes/vehicles.route');
+const users = require('./routes/users.route');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/temp/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 app.use('/api/companies', companies);
+app.use('/api/vehicles', vehicles);
+app.use('/api/users', users);
 
 app.use((req, res, next) => {
 
