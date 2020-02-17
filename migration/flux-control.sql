@@ -4,6 +4,7 @@ CREATE TABLE companies (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(60) NOT NULL UNIQUE,
   thumbnail VARCHAR(500),
+  color VARCHAR(10) NOT NULL,
   created_at DATETIME NOT NULL,
   inactive BOOLEAN DEFAULT(0) NOT NULL
 );
@@ -25,9 +26,15 @@ CREATE TABLE users (
   password VARCHAR(1000),
   role VARCHAR(15) NOT NULL,
   created_at DATETIME NOT NULL,
-  inactive BOOLEAN DEFAULT(0) NOT NULL
+  inactive BOOLEAN DEFAULT(0) NOT NULL,
+  token_id VARCHAR(64),
+  FOREIGN KEY (token_id) REFERENCES tokens(id)
 );
 
+CREATE TABLE tokens (
+  id VARCHAR(64) PRIMARY KEY,
+  expires DATETIME NOT NULL
+);
 
 CREATE TABLE flow_records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

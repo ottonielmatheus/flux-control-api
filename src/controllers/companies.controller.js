@@ -13,7 +13,7 @@ exports.get = (req, res, next) => {
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -30,7 +30,7 @@ exports.search = (req, res, next) => {
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -47,7 +47,7 @@ exports.add = (req, res, next) => {
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -64,7 +64,7 @@ exports.change = (req, res, next) => {
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -81,6 +81,6 @@ exports.remove = (req, res, next) => {
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };

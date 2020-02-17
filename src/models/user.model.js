@@ -1,4 +1,5 @@
 const crypt = require('bcrypt');
+const random = require('../utils/random');
 const sql = require('../models/database');
 
 const salt = 7;
@@ -9,15 +10,17 @@ const User = function (user) {
     this.registration = user.registration;
     this.name = user.name;
     this.email = user.email;
+    this.password = user.password;
     this.role = user.role;
     this.created_at = user.created_at;
     this.inactive = user.inactive;
+    this.token_id = user.token_id;
 }
 
-User.get = (id, result) => {
+User.get = (registration, result) => {
 
-    sql.query(`SELECT * FROM users WHERE id = ?`,
-    [id],
+    sql.query(`SELECT * FROM users WHERE registration = ?`,
+    [registration],
     
     (error, results, field) => {
 
@@ -58,7 +61,7 @@ User.add = (user, result) => {
         if (error) throw error;
 
         result({
-            id: results.resultId,
+            registration: results.resultId,
             name: user.name,
             email: user.email,
             role: user.role,
@@ -71,51 +74,83 @@ User.change = (user, result) => {
 
     sql.query(`UPDATE users
                 SET name = ?, email = ?, role = ?
-                WHERE id = ?`,
-    [user.name, user.email, user.role, user.id],
+                WHERE registration = ?`,
+    [user.name, user.email, user.role, user.registration],
     
     (error, results, field) => {
 
         if (error) throw error;
 
-        result(results.rowsChanged > 0);
+        result(results.changedRows > 0);
+    });
+};
+
+User.setToken = (user, result) => {
+
+    if (!user.registration) throw new Error('user registration cannot be null');
+
+    const now = new Date();
+    const token = { id: random.id(), expires: now.addHours(1) };
+
+    sql.query(`INSERT INTO tokens (id, expires) VALUES (?, ?)`,
+    [token.id, token.expires],
+    
+    (error, results, field) => {
+
+        if (error) throw error;
+
+        sql.query(`UPDATE users
+                    SET token_id = ?
+                    WHERE registration = ?`,
+        [token.id, user.registration],
+        
+        (error, results, field) => {
+
+            if (error) throw error;
+        
+            result(results.changedRows > 0);
+        });
     });
 };
 
 User.setPassword = (user, result) => {
 
-    crypt.hash((user.password, salt, (error, hash) => {
+    crypt.hash(user.password, salt, (error, hash) => {
 
         if (error) throw error;
     
+        const now = new Date();
+
         sql.query(`UPDATE users
-                    SET password = ?
-                    WHERE id = ?`,
-        [hash, user.id],
+                    INNER JOIN tokens ON tokens.id = users.token_id 
+                    SET users.password = ?, tokens.expires = ?
+                    WHERE users.token_id = ?
+                    AND tokens.expires > ?`,
+        [hash, now, user.token_id, now],
         
         (error, results, field) => {
 
-            if (error) throw error;                
+            if (error) throw error; 
 
-            result(results.rowsChanged > 0);
+            result(results.changedRows > 0);
         });
-    }));
+    });
 };
 
-User.remove = (id, result) => {
+User.remove = (registration, result) => {
 
     if (error) throw error;
 
     sql.query(`UPDATE FROM users
                 SET inactive = 1 
-                WHERE id = ?`,
-    [id],
+                WHERE registration = ?`,
+    [registration],
 
     (error, results, field) => {
 
         if (error) throw error;
 
-        result(results.rowsChanged > 0);
+        result(results.changedRows > 0);
     });
 };
 

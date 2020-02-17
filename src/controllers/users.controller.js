@@ -6,14 +6,15 @@ exports.get = (req, res, next) => {
 
         User.get(req.params.id, (result) => {
 
-            if (result) res.status(200).send({ user: result });
+            if (result) 
+                return res.status(200).send({ user: result });
             
             res.status(404).send({ message: "user_not_found" }); 
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -23,14 +24,15 @@ exports.search = (req, res, next) => {
 
         User.search((result) => {
 
-            if (result) res.status(200).send({ items: result });
+            if (result) 
+                return res.status(200).send({ items: result });
             
             res.status(404).send({ message: "no_user_registered" }); 
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -40,14 +42,15 @@ exports.add = (req, res, next) => {
 
         User.add(new User(req.body), (result) => {
 
-            if (result) res.status(201).send({ user_added: result });
+            if (result) 
+                return res.status(201).send({ user_added: result });
             
             res.status(406).send({ message: "invalid_user" }); 
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -57,14 +60,33 @@ exports.change = (req, res, next) => {
 
         User.change(new User(req.body), (result) => {
 
-            if (result) res.status(202).send({ message: "user_changed" });
+            if (result) 
+                return res.status(202).send({ message: "user_changed" });
             
             res.status(304).send({ message: "user_not_changed" }); 
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
+    }
+};
+
+exports.setToken = (req, res, next) => {
+
+    try {
+
+        User.setToken(new User(req.body), (result) => {
+        
+            if (result) 
+                return res.status(202).send({ message: "token_generated" });
+
+            res.status(304).send({ message: "token_not_generated" });
+        });
+    }
+
+    catch (ex) {
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -74,14 +96,15 @@ exports.setPassword = (req, res, next) => {
 
         User.setPassword(new User(req.body), (result) => {
 
-            if (result) res.status(202).send({ message: "password_defined" });
+            if (result) 
+                return res.status(202).send({ message: "password_defined" });
             
             res.status(304).send({ message: "password_not_defined" });
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };
 
@@ -91,13 +114,14 @@ exports.remove = (req, res, next) => {
 
         User.remove(req.params.id, (result) => {
 
-            if (result) res.status(202).send({ message: "user_deleted" });
+            if (result) 
+                return res.status(202).send({ message: "user_deleted" });
             
             res.status(304).send({ message: "user_not_deleted" }); 
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex });
+        res.status(500).send({ error: ex.message });
     }
 };

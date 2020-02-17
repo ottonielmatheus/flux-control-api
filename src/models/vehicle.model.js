@@ -53,7 +53,7 @@ Vehicle.add = (vehicle, result) => {
         if (error) throw error;
 
         result({
-            id: results.resultId,
+            id: results.insertId,
             number: vehicle.number,
             license_plate: vehicle.license_plate,
             company_id: vehicle.company_id,
@@ -73,7 +73,7 @@ Vehicle.change = (vehicle, result) => {
 
         if (error) throw error;
 
-        result(results.rowsChanged > 0);
+        result(results.changedRows > 0);
     });
 };
 
@@ -90,7 +90,7 @@ Vehicle.remove = (id, result) => {
 
         if (error) throw error;
 
-        result(results.rowsChanged > 0);
+        result(results.changedRows > 0);
     });
 };
 
