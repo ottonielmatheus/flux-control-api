@@ -1,4 +1,36 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+
+exports.login = (req, res, next) => {
+
+    try {
+
+        User.login(new User(req.body), (result) => {
+
+            if (result) {
+
+                const token = jwt.sign({
+                        registration: result.registration,
+                        name: result.name,
+                        email: result.email,
+                        role: result.role
+                    },
+                    process.env.JWT_KEY, 
+                    { expiresIn: process.env.JWT_EXPIRES }
+                );
+
+                return res.status(200).send({ token: token, message: "user_authenticated" });
+            }
+
+            res.status(401).send({ message: "user_not_authenticated" });
+        });
+    }
+
+    catch (ex) {
+        res.status(500).send({ error: ex.message });
+    }
+
+};
 
 exports.get = (req, res, next) => {
 

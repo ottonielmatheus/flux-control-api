@@ -12,7 +12,7 @@ CREATE TABLE companies (
 CREATE TABLE vehicles (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   number SMALLINT NOT NULL,
-  license_plate VARCHAR(10) NOT NULL,
+  license_plate VARCHAR(10) UNIQUE NOT NULL,
   created_at DATETIME NOT NULL,
   inactive BOOLEAN DEFAULT(0) NOT NULL,
   company_id INT UNSIGNED NOT NULL,

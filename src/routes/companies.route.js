@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const imageUpload = require('../config/imageConfig').upload;
+const imageUpload = require('../middlewares/imageConfig');
 
 const CompaniesController = require('../controllers/companies.controller');
 

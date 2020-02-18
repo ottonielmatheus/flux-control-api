@@ -7,7 +7,7 @@ dotenv.config({
     }[process.env.NODE_ENV] 
 });
 
-Date.prototype.addHours = function(hours) {
+Date.prototype.addHours = function (hours) {
     this.setTime(this.getTime() + ( hours * 60 * 60 * 1000));
     return this;
 }

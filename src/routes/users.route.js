@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const imageUpload = require('../config/imageConfig').upload;
+const authorize = require('../middlewares/authorize');
 
 const UsersController = require('../controllers/users.controller');
 
-router.get('/', UsersController.search);
-router.get('get/:id', UsersController.get);
-router.post('/add', imageUpload.single('thumbnail'), UsersController.add);
-router.get('/generate/token', UsersController.setToken);
-router.put('/setPassword', UsersController.setPassword);
-router.patch('/change', UsersController.change);
-router.delete('/remove/:id', UsersController.remove);
+router.post('/login', UsersController.login);
+router.get('/', authorize(), UsersController.search);
+router.get('get/:id', authorize(), UsersController.get);
+router.post('/add', UsersController.add);
+router.get('/generate/token', authorize('admin', 'manager'), UsersController.setToken);
+router.put('/setPassword', authorize('admin', 'manager'), UsersController.setPassword);
+router.patch('/change', authorize('admin', 'manager'), UsersController.change);
+router.delete('/remove/:id', authorize('admin', 'manager'), UsersController.remove);
 
 module.exports = router;

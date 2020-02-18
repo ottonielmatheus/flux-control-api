@@ -17,6 +17,29 @@ const User = function (user) {
     this.token_id = user.token_id;
 }
 
+User.login = (user, result) => {
+
+    sql.query(`SELECT * FROM users WHERE email = ? AND inactive = 0`,
+    [user.email],
+    
+    (error, results, field) => {
+
+        if (error) throw error;
+
+        const _user = new User(results[0]);
+
+        crypt.compare(user.password, _user.password, (error, isAuthenticated) => {
+
+            if (error) throw error;
+
+            if (isAuthenticated) 
+                return result(_user);
+
+            result(null);
+        });
+    });
+};
+
 User.get = (registration, result) => {
 
     sql.query(`SELECT * FROM users WHERE registration = ?`,
