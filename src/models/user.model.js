@@ -5,16 +5,20 @@ const sql = require('../models/database');
 const salt = 7;
 
 // constructor
-const User = function (user) {
+const User = function (user, sensible = false) {
     
     this.registration = user.registration;
     this.name = user.name;
     this.email = user.email;
-    this.password = user.password;
     this.role = user.role;
     this.created_at = user.created_at;
     this.inactive = user.inactive;
-    this.token_id = user.token_id;
+
+    if (!sensible) {
+        
+        this.password = user.password;
+        this.token_id = user.token_id;
+    }
 }
 
 User.login = (user, result) => {
@@ -32,9 +36,8 @@ User.login = (user, result) => {
 
             if (error) throw error;
 
-            if (isAuthenticated) 
-                return result(_user);
-
+            if (isAuthenticated) return result(_user);
+            
             result(null);
         });
     });
@@ -49,8 +52,7 @@ User.get = (registration, result) => {
 
         if (error) throw error;
 
-        result(results[0]);
-        
+        result(new User(results[0], true));
     });
 };
 
@@ -61,7 +63,7 @@ User.search = (result) => {
 
         if (error) throw error;
         
-        result(results);
+        result(results.map(user => new User(user, true)));
     });
 };
 
