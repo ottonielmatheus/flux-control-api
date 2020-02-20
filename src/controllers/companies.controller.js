@@ -4,9 +4,11 @@ exports.get = (req, res, next) => {
     
     try {
 
-        Company.get(req.params.id, (result) => {
+        const model = new Company(req.params);
 
-            if (result) res.status(200).send({ company: result });
+        model.get((result) => {
+
+            if (result.id) res.status(200).send({ company: result });
             
             res.status(404).send({ message: "company_not_found" }); 
         });
@@ -21,7 +23,9 @@ exports.search = (req, res, next) => {
 
     try {
 
-        Company.search((result) => {
+        const model = new Company({});
+
+        model.search((result) => {
 
             if (result) res.status(200).send({ items: result });
             
@@ -38,7 +42,9 @@ exports.add = (req, res, next) => {
 
     try {
 
-        Company.add(new Company(req.body), (result) => {
+        const model = new Company(req.body);
+
+        model.add((result) => {
 
             if (result) res.status(201).send({ company_added: result });
             
@@ -55,7 +61,9 @@ exports.change = (req, res, next) => {
 
     try {
 
-        Company.change(new Company(req.body), (result) => {
+        const model = new Company(req.body);
+
+        model.change((result) => {
 
             if (result) res.status(202).send({ message: "company_changed" });
             
@@ -72,7 +80,9 @@ exports.remove = (req, res, next) => {
 
     try {
 
-        Company.remove(req.params.id, (result) => {
+        const model = new Company(req.params);
+
+        model.remove((result) => {
 
             if (result) res.status(202).send({ message: "company_deleted" });
             

@@ -20,7 +20,7 @@ CREATE TABLE vehicles (
 );
 
 CREATE TABLE users (
-  registration INT UNSIGNED PRIMARY KEY,
+  id INT UNSIGNED PRIMARY KEY,
   name VARCHAR(60) NOT NULL,
   email VARCHAR(40) NOT NULL UNIQUE,
   password VARCHAR(1000),
@@ -36,13 +36,20 @@ CREATE TABLE tokens (
   expires DATETIME NOT NULL
 );
 
+CREATE TABLE records (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  moment DATETIME NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE flow_records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  arrival DATETIME NOT NULL,
-  departure DATETIME,
   inactive BOOLEAN DEFAULT(0) NOT NULL,
+  arrival_id INT UNSIGNED NOT NULL,
+  departure_id INT UNSIGNED,
   vehicle_id INT UNSIGNED NOT NULL,
-  user_id INT UNSIGNED NOT NULL,
-  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
-  FOREIGN KEY (user_id) REFERENCES users(registration)
+  FOREIGN KEY (arrival_id) REFERENCES records(id),
+  FOREIGN KEY (departure_id) REFERENCES records(id),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );

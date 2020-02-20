@@ -5,12 +5,14 @@ exports.login = (req, res, next) => {
 
     try {
 
-        User.login(new User(req.body), (result) => {
+        const model = new User(req.body);
 
-            if (result) {
+        model.login((result) => {
+
+            if (result.id) {
 
                 const token = jwt.sign({
-                        registration: result.registration,
+                        id: result.id,
                         name: result.name,
                         email: result.email,
                         role: result.role
@@ -36,9 +38,11 @@ exports.get = (req, res, next) => {
 
     try {
 
-        User.get(req.params.id, (result) => {
+        const model = new User(req.params);
 
-            if (result) 
+        model.get((result) => {
+
+            if (result.id)
                 return res.status(200).send({ user: result });
             
             res.status(404).send({ message: "user_not_found" }); 
@@ -54,7 +58,9 @@ exports.search = (req, res, next) => {
 
     try {
 
-        User.search((result) => {
+        const model = new User({});
+
+        model.search((result) => {
 
             if (result) 
                 return res.status(200).send({ items: result });
@@ -72,7 +78,9 @@ exports.add = (req, res, next) => {
 
     try {
 
-        User.add(new User(req.body), (result) => {
+        const model = new User(req.body);
+
+        model.add((result) => {
 
             if (result) 
                 return res.status(201).send({ user_added: result });
@@ -90,9 +98,11 @@ exports.change = (req, res, next) => {
 
     try {
 
-        User.change(new User(req.body), (result) => {
+        const model = new User(req.body);
 
-            if (result) 
+        model.change((result) => {
+
+            if (result)
                 return res.status(202).send({ message: "user_changed" });
             
             res.status(304).send({ message: "user_not_changed" }); 
@@ -108,7 +118,9 @@ exports.setToken = (req, res, next) => {
 
     try {
 
-        User.setToken(new User(req.body), (result) => {
+        const model = new User(req.body);
+
+        model.setToken((result) => {
         
             if (result) 
                 return res.status(202).send({ message: "token_generated" });
@@ -126,7 +138,9 @@ exports.setPassword = (req, res, next) => {
 
     try {
 
-        User.setPassword(new User(req.body), (result) => {
+        const model = new User(req.body);
+
+        model.setPassword((result) => {
 
             if (result) 
                 return res.status(202).send({ message: "password_defined" });
@@ -144,7 +158,9 @@ exports.remove = (req, res, next) => {
 
     try {
 
-        User.remove(req.params.id, (result) => {
+        const model = new User(req.params);
+
+        model.remove((result) => {
 
             if (result) 
                 return res.status(202).send({ message: "user_deleted" });

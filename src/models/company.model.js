@@ -1,96 +1,98 @@
-const sql = require('../models/database');
+const sql = require('./database');
 
-// constructor
-const Company = function (company) {
+class Company {
     
-    this.id = company.id;
-    this.name = company.name;
-    this.thumbnail = company.thumbnail;
-    this.color = company.color;
-    this.created_at = company.created_at;
-    this.inactive = company.inactive;
-}
+    constructor (company) {
 
-Company.get = (id, result) => {
+        this.id = company.id;
+        this.name = company.name;
+        this.thumbnail = company.thumbnail;
+        this.color = company.color;
+        this.created_at = company.created_at;
+        this.inactive = company.inactive;
+    }
 
-    sql.query(`SELECT * FROM companies WHERE id = ?`,
-    [id],
-    
-    (error, results, field) => {
+    get (result) {
 
-        if (error) throw error;
-
-        result(results[0]);
+        sql.query(`SELECT * FROM companies WHERE id = ?`,
+        [this.id],
         
-    });
-};
-
-Company.search = (result) => {
-
-    sql.query(`SELECT * FROM companies`,
-    (error, results, field) => {
-
-        if (error) throw error;
-        
-        result(results);
-    });
-};
-
-Company.add = (company, result) => {
-
-    sql.query(`INSERT INTO companies 
-                (name, thumbnail, color, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)`,
-    [
-        company.name,
-        company.thumbnail,
-        company.color,
-        new Date()
-    ],
+        (error, results, field) => {
     
-    (error, results, field) => {
-
-        if (error) throw error;
-
-        result({
-            id: results.insertId,
-            name: company.name,
-            thumbnail: company.thumbnail,
-            color: company.color
+            if (error) throw error;
+    
+            result(results[0]);
+            
         });
-    });
-};
+    }
 
-Company.change = (company, result) => {
+    search (result) {
 
-    sql.query(`UPDATE companies
-                SET name = ?, thumbnail = ?, color = ?
-                WHERE id = ?`,
-    [company.name, company.thumbnail, company.color, company.id],
+        sql.query(`SELECT * FROM companies`,
+        (error, results, field) => {
     
-    (error, results, field) => {
+            if (error) throw error;
+            
+            result(results);
+        });
+    }
+
+    add (result) {
+
+        sql.query(`INSERT INTO companies 
+                    (name, thumbnail, color, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+            this.name,
+            this.thumbnail,
+            this.color,
+            new Date()
+        ],
+        
+        (error, results, field) => {
+    
+            if (error) throw error;
+    
+            result({
+                id: results.insertId,
+                name: this.name,
+                thumbnail: this.thumbnail,
+                color: this.color
+            });
+        });
+    }
+
+    change (result) {
+
+        sql.query(`UPDATE companies
+                    SET name = ?, thumbnail = ?, color = ?
+                    WHERE id = ?`,
+        [this.name, this.thumbnail, this.color, this.id],
+        
+        (error, results, field) => {
+    
+            if (error) throw error;
+    
+            result(results.changedRows > 0);
+        });
+    }
+
+    remove (result) {
 
         if (error) throw error;
-
-        result(results.changedRows > 0);
-    });
-};
-
-Company.remove = (id, result) => {
-
-    if (error) throw error;
-
-    sql.query(`UPDATE FROM companies
-                SET inactive = 1 
-                WHERE id = ?`,
-    [id],
-
-    (error, results, field) => {
-
-        if (error) throw error;
-
-        result(results.changedRows > 0);
-    });
-};
+    
+        sql.query(`UPDATE FROM companies
+                    SET inactive = 1 
+                    WHERE id = ?`,
+        [this.id],
+    
+        (error, results, field) => {
+    
+            if (error) throw error;
+    
+            result(results.changedRows > 0);
+        });
+    }
+}
 
 module.exports = Company;

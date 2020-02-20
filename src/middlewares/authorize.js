@@ -9,7 +9,7 @@ module.exports = (...roles) => {
             const decode = jwt.verify(token, process.env.JWT_KEY);
 
             if (!roles.length || roles.includes(decode.role)) {
-                req.session = decode;
+                req.context = decode;
                 next();
             }
 
