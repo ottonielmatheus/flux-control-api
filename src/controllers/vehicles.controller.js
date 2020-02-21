@@ -8,7 +8,7 @@ exports.get = (req, res, next) => {
 
         model.get((result) => {
 
-            if (result.id)
+            if (result)
                 return res.status(200).send({ vehicle: result });
 
             res.status(404).send({ message: "vehicle_not_found" });

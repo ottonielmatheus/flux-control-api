@@ -8,7 +8,7 @@ exports.get = (req, res, next) => {
 
         model.get((result) => {
 
-            if (result.id) res.status(200).send({ company: result });
+            if (result) res.status(200).send({ company: result });
             
             res.status(404).send({ message: "company_not_found" }); 
         });

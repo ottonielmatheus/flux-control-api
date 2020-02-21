@@ -30,15 +30,20 @@ class User {
         (error, results, field) => {
     
             if (error) throw error;
-    
+
             const user = new User(results[0]);
+
+            if (user) {
+                crypt.compare(this.password, user.password, (error, passwordsMatch) => {
     
-            crypt.compare(this.password, user.password, (error, passwordsMatch) => {
+                    if (error) throw error;
     
-                if (error) throw error;
- 
-                result((passwordsMatch) ? new User(user) : {});
-            });
+                    result((passwordsMatch) ? new User(user) : null);
+                });
+            }
+
+            else
+                result(null);
         });
     }
 

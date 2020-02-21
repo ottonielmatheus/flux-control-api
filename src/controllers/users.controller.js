@@ -9,7 +9,7 @@ exports.login = (req, res, next) => {
 
         model.login((result) => {
 
-            if (result.id) {
+            if (result) {
 
                 const token = jwt.sign({
                         id: result.id,
@@ -20,7 +20,7 @@ exports.login = (req, res, next) => {
                     process.env.JWT_KEY, 
                     { expiresIn: process.env.JWT_EXPIRES }
                 );
-
+                
                 return res.status(200).send({ token: token, message: "user_authenticated" });
             }
 
@@ -42,7 +42,7 @@ exports.get = (req, res, next) => {
 
         model.get((result) => {
 
-            if (result.id)
+            if (result)
                 return res.status(200).send({ user: result });
             
             res.status(404).send({ message: "user_not_found" }); 

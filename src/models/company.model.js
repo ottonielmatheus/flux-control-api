@@ -21,7 +21,7 @@ class Company {
     
             if (error) throw error;
     
-            result(results[0]);
+            result(new Company(results[0]));
             
         });
     }
@@ -33,7 +33,7 @@ class Company {
     
             if (error) throw error;
             
-            result(results);
+            result(results.map(company => new Company(company)));
         });
     }
 
