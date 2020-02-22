@@ -31,9 +31,12 @@ class User {
     
             if (error) throw error;
 
-            const user = new User(results[0]);
+            let user = results[0];
 
             if (user) {
+
+                user = new User(user);
+
                 crypt.compare(this.password, user.password, (error, passwordsMatch) => {
     
                     if (error) throw error;
@@ -56,7 +59,12 @@ class User {
     
             if (error) throw error;
 
-            result(new User(results[0], true));
+            const user = results[0];
+
+            if (user)
+                return result(new User(user, true));
+
+            result(null);
         });
     }
 

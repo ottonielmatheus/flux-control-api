@@ -21,8 +21,12 @@ class Company {
     
             if (error) throw error;
     
-            result(new Company(results[0]));
+            const company = results[0];
+
+            if (company)
+                result(new Company(company));
             
+            result(null);
         });
     }
 

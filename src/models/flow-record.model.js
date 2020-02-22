@@ -42,7 +42,12 @@ class FlowRecord {
     
             if (error) throw error;
     
-            result(new FlowRecord(results[0]));
+            const flowRecord = results[0];
+
+            if (flowRecord)
+                return result(new FlowRecord(flowRecord));
+
+            result(null);
         });
     }
 

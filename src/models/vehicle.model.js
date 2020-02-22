@@ -21,7 +21,12 @@ class Vehicle {
     
             if (error) throw error;
             
-            return result(new Vehicle(results[0]));
+            const vehicle = results[0];
+
+            if (vehicle)
+                return result(new Vehicle(vehicle));
+
+            result(null);
         });
     }
 
