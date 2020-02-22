@@ -8,7 +8,8 @@ exports.get = (req, res, next) => {
 
         model.get((result) => {
 
-            if (result) res.status(200).send({ company: result });
+            if (result) 
+                return res.status(200).send({ company: result });
             
             res.status(404).send({ message: "company_not_found" }); 
         });
@@ -27,7 +28,8 @@ exports.search = (req, res, next) => {
 
         model.search((result) => {
 
-            if (result) res.status(200).send({ items: result });
+            if (result) 
+                return res.status(200).send({ items: result });
             
             res.status(404).send({ message: "no_company_registered" }); 
         });
@@ -46,7 +48,8 @@ exports.add = (req, res, next) => {
 
         model.add((result) => {
 
-            if (result) res.status(201).send({ company_added: result });
+            if (result)
+                return res.status(201).send({ company_added: result });
             
             res.status(406).send({ message: "invalid_company" }); 
         });
@@ -65,7 +68,8 @@ exports.change = (req, res, next) => {
 
         model.change((result) => {
 
-            if (result) res.status(202).send({ message: "company_changed" });
+            if (result)
+                return res.status(202).send({ message: "company_changed" });
             
             res.status(304).send({ message: "company_not_changed" }); 
         });
@@ -84,7 +88,8 @@ exports.remove = (req, res, next) => {
 
         model.remove((result) => {
 
-            if (result) res.status(202).send({ message: "company_deleted" });
+            if (result)
+                return res.status(202).send({ message: "company_deleted" });
             
             res.status(304).send({ message: "company_not_deleted" }); 
         });
