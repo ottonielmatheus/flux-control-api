@@ -1,4 +1,5 @@
 const sql = require('./database');
+const Vehicle = require('./vehicle.model');
 
 class Company {
     
@@ -12,6 +13,19 @@ class Company {
         this.inactive = company.inactive;
     }
 
+    fleet (result) {
+
+        sql.query(`SELECT * FROM vehicles WHERE company_id = ? AND inactive = 0`,
+        [this.id],
+        
+        (error, results, field) => {
+    
+            if (error) throw error;
+
+            result(results.map(vehicle => new Vehicle(vehicle)));
+        });
+    };
+
     get (result) {
 
         sql.query(`SELECT * FROM companies WHERE id = ?`,
@@ -24,7 +38,7 @@ class Company {
             const company = results[0];
 
             if (company)
-                result(new Company(company));
+                return result(new Company(company));
             
             result(null);
         });
@@ -45,7 +59,7 @@ class Company {
 
         sql.query(`INSERT INTO companies 
                     (name, thumbnail, color, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?)`,
+                    VALUES (?, ?, ?, ?)`,
         [
             this.name,
             this.thumbnail,

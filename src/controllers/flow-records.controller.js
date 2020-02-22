@@ -28,7 +28,7 @@ exports.search = (req, res, next) => {
 
         model.search((result) => {
 
-            if (result)
+            if (result.length)
                 return res.status(200).send({ items: result });
             
             res.status(404).send({ message: "no_records_registered" }); 

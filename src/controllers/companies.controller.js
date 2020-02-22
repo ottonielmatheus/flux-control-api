@@ -20,6 +20,26 @@ exports.get = (req, res, next) => {
     }
 };
 
+exports.fleet = (req, res, next) => {
+
+    try {
+
+        const model = new Company(req.params);
+
+        model.fleet((result) => {
+
+            if (result.length)
+                return res.status(200).send({ fleet: result });
+            
+            res.status(404).send({ message: "company_doesnt_have_fleet" }); 
+        });
+    }
+
+    catch (ex) {
+        res.status(500).send({ error: ex.message });
+    }
+};
+
 exports.search = (req, res, next) => {
 
     try {
@@ -28,7 +48,7 @@ exports.search = (req, res, next) => {
 
         model.search((result) => {
 
-            if (result) 
+            if (result.length) 
                 return res.status(200).send({ items: result });
             
             res.status(404).send({ message: "no_company_registered" }); 
