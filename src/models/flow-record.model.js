@@ -51,7 +51,7 @@ class FlowRecord {
         });
     }
 
-    search (result) {
+    load (result) {
 
         sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
                     arrival.moment arrival_moment, arrival.user_id arrival_user,

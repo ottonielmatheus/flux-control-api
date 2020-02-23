@@ -12,6 +12,32 @@ class Vehicle {
         this.inactive = vehicle.inactive;
     }
 
+    search (query, filterCompanies, result) {
+
+        let filterQuery = '';
+
+        if (filterCompanies) {
+
+            filterQuery = "AND (" +
+                filterCompanies.map((companyId) => {
+                    return "company_id = " + sql.escape(companyId)
+                }).join(' OR ') +
+            ")";
+        }
+
+        sql.query(`SELECT * FROM vehicles
+                    WHERE (license_plate LIKE ? OR number LIKE ?)
+                    AND inactive = 0 ` + filterQuery,
+        [`%${query}%`, `%${query}%`],
+        
+        (error, results, field) => {
+
+            if (error) throw error;
+
+            return result(results.map(vehicle => new Vehicle(vehicle)));
+        });
+    }
+
     get (result) {
 
         sql.query(`SELECT * FROM vehicles WHERE id = ?`,
@@ -30,7 +56,7 @@ class Vehicle {
         });
     }
 
-    search (result) {
+    load (result) {
 
         sql.query(`SELECT * FROM vehicles`,
         (error, results, field) => {

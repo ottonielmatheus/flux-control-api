@@ -5,7 +5,8 @@ const authorize = require('../middlewares/authorize')
 const VehiclesController = require('../controllers/vehicles.controller');
 
 router.get('/get/:id', authorize(), VehiclesController.get);
-router.get('/', authorize(), VehiclesController.search);
+router.get('/search', authorize(), VehiclesController.search);
+router.get('/', authorize(), VehiclesController.load);
 router.get('/garage', authorize(), VehiclesController.garage);
 router.get('/arrival/:id', authorize(), VehiclesController.arrival);
 router.put('/departure/:id', authorize(), VehiclesController.departure);

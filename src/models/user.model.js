@@ -68,7 +68,7 @@ class User {
         });
     }
 
-    search (result) {
+    load (result) {
 
         sql.query(`SELECT * FROM users`,
         (error, results, field) => {

@@ -40,13 +40,13 @@ exports.fleet = (req, res, next) => {
     }
 };
 
-exports.search = (req, res, next) => {
+exports.load = (req, res, next) => {
 
     try {
 
         const model = new Company({});
 
-        model.search((result) => {
+        model.load((result) => {
 
             if (result.length) 
                 return res.status(200).send({ items: result });

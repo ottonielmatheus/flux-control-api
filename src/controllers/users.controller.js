@@ -24,7 +24,7 @@ exports.login = (req, res, next) => {
                 return res.status(200).send({ token: token, message: "user_authenticated" });
             }
 
-            res.status(401).send({ message: "user_not_authenticated" });
+            res.status(401).send({ message: "wrong_credentials" });
         });
     }
 
@@ -54,13 +54,13 @@ exports.get = (req, res, next) => {
     }
 };
 
-exports.search = (req, res, next) => {
+exports.load = (req, res, next) => {
 
     try {
 
         const model = new User({});
 
-        model.search((result) => {
+        model.load((result) => {
 
             if (result.length) 
                 return res.status(200).send({ items: result });

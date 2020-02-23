@@ -44,7 +44,7 @@ class Company {
         });
     }
 
-    search (result) {
+    load (result) {
 
         sql.query(`SELECT * FROM companies`,
         (error, results, field) => {

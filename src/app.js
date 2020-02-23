@@ -16,6 +16,7 @@ app.use((req, res, next) => {
     
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
     next();
 });
 
@@ -26,17 +27,7 @@ app.use('/api/users', users);
 app.use('/api/flow/records', flowRecords);
 
 app.use((req, res, next) => {
-
-    const error = {
-        status: 404,
-        message: 'not_found'
-    };
-
-    next(error);
-});
-
-app.use((error, req, res, next) => {
-    res.status(error.status || 500).send({ error: error.message });
+    res.status(404).send({ message: 'route_not_found' });
 });
 
 module.exports = app;

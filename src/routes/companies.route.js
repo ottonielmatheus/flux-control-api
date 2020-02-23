@@ -5,7 +5,7 @@ const imageUpload = require('../middlewares/imageConfig');
 
 const CompaniesController = require('../controllers/companies.controller');
 
-router.get('/', authorize(), CompaniesController.search);
+router.get('/', authorize(), CompaniesController.load);
 router.get('/get/:id', authorize(), CompaniesController.get);
 router.get('/fleet/:id', authorize(), CompaniesController.fleet);
 router.post('/add', authorize('manager', 'admin'), imageUpload.single('thumbnail'), CompaniesController.add);

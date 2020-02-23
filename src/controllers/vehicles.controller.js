@@ -1,5 +1,30 @@
 const Vehicle = require('../models/vehicle.model');
 
+exports.search = (req, res, next) => {
+
+    try {
+
+        let filterCompanies;
+
+        if (req.query.company)
+            filterCompanies = [...req.query.company];
+        
+        const model = new Vehicle({});
+
+        model.search(req.query.query, filterCompanies, (result) => {
+
+            if (result.length)
+                return res.status(200).send({ items: result });
+
+            res.status(404).send({ message: "vehicle_not_found" });
+        });
+    }
+
+    catch (ex) {
+        res.status(500).send({ error: ex.message });
+    }
+};
+
 exports.get = (req, res, next) => {
     
     try {
@@ -20,13 +45,13 @@ exports.get = (req, res, next) => {
     }
 };
 
-exports.search = (req, res, next) => {
+exports.load = (req, res, next) => {
 
     try {
 
         const model = new Vehicle({});
 
-        model.search((result) => {
+        model.load((result) => {
             
             if (result.length)
                 return res.status(200).send({ items: result });
