@@ -12,22 +12,11 @@ class Vehicle {
         this.inactive = vehicle.inactive;
     }
 
-    search (query, filterCompanies, result) {
-
-        let filterQuery = '';
-
-        if (filterCompanies) {
-
-            filterQuery = "AND (" +
-                filterCompanies.map((companyId) => {
-                    return "company_id = " + sql.escape(companyId)
-                }).join(' OR ') +
-            ")";
-        }
+    search (query, result) {
 
         sql.query(`SELECT * FROM vehicles
                     WHERE (license_plate LIKE ? OR number LIKE ?)
-                    AND inactive = 0 ` + filterQuery,
+                    AND inactive = 0`,
         [`%${query}%`, `%${query}%`],
         
         (error, results, field) => {

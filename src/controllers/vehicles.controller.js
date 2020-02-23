@@ -4,14 +4,9 @@ exports.search = (req, res, next) => {
 
     try {
 
-        let filterCompanies;
-
-        if (req.query.company)
-            filterCompanies = [...req.query.company];
-        
         const model = new Vehicle({});
 
-        model.search(req.query.query, filterCompanies, (result) => {
+        model.search(req.query.query, (result) => {
 
             if (result.length)
                 return res.status(200).send({ items: result });
