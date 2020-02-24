@@ -13,7 +13,7 @@ const imageFilter = (req, file, callback) => {
     callback(null, ['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimetype));
 };
 
-const upload = multer({ 
+const image = multer({ 
     storage: storage,
     limits: {
         fileSize: 5 * 1024 * 1024
@@ -21,4 +21,6 @@ const upload = multer({
     fileFilter: imageFilter
 });
 
-module.exports = upload;
+module.exports = {
+    image: image
+};

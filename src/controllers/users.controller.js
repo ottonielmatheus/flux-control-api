@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const mailer = require('../utils/mailer');
 const User = require('../models/user.model');
 
 exports.login = (req, res, next) => {
@@ -114,18 +115,39 @@ exports.change = (req, res, next) => {
     }
 };
 
-exports.setToken = (req, res, next) => {
+exports.requestPassword = (req, res, next) => {
 
     try {
 
         const model = new User(req.body);
 
-        model.setToken((result) => {
+        model.requestPassword((token) => {
         
-            if (result) 
-                return res.status(202).send({ message: "token_generated" });
+            if (token) {
 
-            res.status(304).send({ message: "token_not_generated" });
+                console.log(model, token);
+
+                mailer.sendMail({
+                    from: process.env.SYSTEM_EMAIL,
+                    to: model.email,
+
+                    subject: `${ model.name } - Alterar Senha`,
+                    text: `Parece que alguém solicitou uma nova senha para você. \n\n` +
+                        `Por-favor, acesse ${ process.env.HOSTNAME }/newpassword/${ token.id }` +
+                        ` em até ${ process.env.TOKEN_EXPIRES } horas para definir sua nova senha.`
+                },
+                
+                (error, info) => {
+
+                    if (error) throw error;
+
+                    return res.status(202).send({ message: "email_sended" });
+                });                
+            }
+
+            else
+                res.status(304).send({ message: "email_not_sended" });
+            
         });
     }
 

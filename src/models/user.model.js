@@ -122,12 +122,12 @@ class User {
         });
     }
 
-    setToken (result) {
+    requestPassword (result) {
 
         if (!this.id) throw new Error('user id cannot be null');
     
         const now = new Date();
-        const token = { id: random.id(), expires: now.addHours(1) };
+        const token = { id: random.id(), expires: now.addHours(process.env.TOKEN_EXPIRES) };
     
         sql.query(`INSERT INTO tokens (id, expires) VALUES (?, ?)`,
         [token.id, token.expires],
@@ -145,7 +145,10 @@ class User {
     
                 if (error) throw error;
             
-                result(results.changedRows > 0);
+                if (results.changedRows > 0)
+                    return result(token);
+
+                result(null);
             });
         });
     }
