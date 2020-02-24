@@ -82,7 +82,7 @@ exports.add = (req, res, next) => {
 
         model.add((result) => {
 
-            if (result) 
+            if (result)
                 return res.status(201).send({ user_added: result });
             
             res.status(406).send({ message: "invalid_user" }); 

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const cloudinary = require('../integrations/cloudinary.api');
 const Company = require('../models/company.model');
 
 exports.get = (req, res, next) => {
@@ -64,19 +66,31 @@ exports.add = (req, res, next) => {
 
     try {
 
-        const model = new Company(req.body);
+        const img = req.file;
 
-        model.add((result) => {
+        cloudinary.uploader.upload(img.path, (error, result) => {
 
-            if (result)
-                return res.status(201).send({ company_added: result });
-            
-            res.status(406).send({ message: "invalid_company" }); 
+            if (error) throw error;
+
+            req.body.thumbnail = result.url;
+            const model = new Company(req.body);
+
+            model.add((result) => {
+
+                if (result)
+                    return res.status(201).send({ company_added: result });
+                
+                res.status(406).send({ message: "invalid_company" }); 
+            });
         });
     }
 
     catch (ex) {
-        res.status(500).send({ error: ex.message });
+        res.status(500).send({ error: ex.message || ex });
+    }
+
+    finally {
+        if (req.file.path) fs.unlinkSync(req.file.path);
     }
 };
 
