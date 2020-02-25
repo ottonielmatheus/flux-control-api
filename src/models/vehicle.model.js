@@ -153,6 +153,8 @@ class Vehicle {
                 if (inGarage) return result(false);
     
                 sql.beginTransaction((error) => {
+
+                    if (error) throw error;
     
                     sql.query(`INSERT INTO records (moment, user_id)
                             VALUES (?, ?)`,
