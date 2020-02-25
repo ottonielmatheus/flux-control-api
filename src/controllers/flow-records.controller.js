@@ -6,10 +6,12 @@ exports.get = (req, res, next) => {
 
         const model = new FlowRecord(req.params);
 
-        model.get((result) => {
+        model.get((flowRecord, error) => {
 
-            if (result)
-                return res.status(200).send({ flowRecord: result });
+            if (error) throw error;
+
+            if (flowRecord)
+                return res.status(200).send({ flowRecord: flowRecord });
             
             res.status(404).send({ message: "record_not_found" }); 
         });
@@ -26,10 +28,12 @@ exports.load = (req, res, next) => {
 
         const model = new FlowRecord({});
 
-        model.load((result) => {
+        model.load((flowRecords, error) => {
 
-            if (result.length)
-                return res.status(200).send({ items: result });
+            if (error) throw error;
+
+            if (flowRecords.length)
+                return res.status(200).send({ items: flowRecords });
             
             res.status(404).send({ message: "no_records_registered" }); 
         });
@@ -46,9 +50,11 @@ exports.remove = (req, res, next) => {
 
         const model = new FlowRecord(req.params);
 
-        model.remove((result) => {
+        model.remove((done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(202).send({ message: "record_deleted" });
             
             res.status(304).send({ message: "record_not_deleted" }); 

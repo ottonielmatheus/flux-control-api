@@ -159,11 +159,13 @@ class Company {
         
                 if (error) throw error;
         
+                sql.commit();
                 result(results.changedRows > 0);
             });
         }
 
         catch (ex) {
+            sql.rollback();
             result(null, ex);
         }
     }

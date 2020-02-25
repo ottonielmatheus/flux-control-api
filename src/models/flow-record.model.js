@@ -29,31 +29,40 @@ class FlowRecord {
 
     get (result) {
 
-        sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
+        try {
+
+            sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
                     arrival.moment arrival_moment, arrival.user_id arrival_user,
                     departure.moment departure_moment, departure.user_id departure_user
                     FROM flow_records flowRecord
                     LEFT JOIN records arrival ON arrival.id = flowRecord.arrival_id
                     LEFT JOIN records departure ON departure.id = flowRecord.departure_id
                     WHERE flowRecord.id = ? AND flowRecord.inactive = 0`,
-        [this.id],
+            [this.id],
+            
+            (error, results, field) => {
         
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            const flowRecord = results[0];
+                if (error) throw error;
+        
+                const flowRecord = results[0];
 
-            if (flowRecord)
-                return result(new FlowRecord(flowRecord));
+                if (flowRecord)
+                    return result(new FlowRecord(flowRecord));
 
-            result(null);
-        });
+                result(null);
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     load (result) {
 
-        sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
+        try {
+
+            sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
                     arrival.moment arrival_moment, arrival.user_id arrival_user,
                     departure.moment departure_moment, departure.user_id departure_user
                     FROM flow_records flowRecord
@@ -61,27 +70,47 @@ class FlowRecord {
                     LEFT JOIN records departure ON departure.id = flowRecord.departure_id
                     WHERE flowRecord.inactive = 0`,
     
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.map(flowRecord => new FlowRecord(flowRecord)));
-        });
+            (error, results, field) => {
+        
+                if (error) throw error;
+        
+                result(results.map(flowRecord => new FlowRecord(flowRecord)));
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     remove (result) {
 
-        sql.query(`UPDATE flow_records
-                    SET inactive = 1
-                    WHERE id = ?`,
-        [this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.changedRows > 0);
-        });
+        try {
+
+            sql.beginTransaction((error) => {
+
+                if (error) throw error;
+               
+                sql.query(`UPDATE flow_records
+                        SET inactive = 1
+                        WHERE id = ?`,
+                [this.id],
+                
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result(results.changedRows > 0);
+                });
+                
+            });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 };
 
