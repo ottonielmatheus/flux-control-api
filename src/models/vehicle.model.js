@@ -14,182 +14,284 @@ class Vehicle {
 
     search (query, result) {
 
-        sql.query(`SELECT * FROM vehicles
-                    WHERE (license_plate LIKE ? OR number LIKE ?)
-                    AND inactive = 0`,
-        [`%${query}%`, `%${query}%`],
-        
-        (error, results, field) => {
+        try {
 
-            if (error) throw error;
+            sql.query(`SELECT * FROM vehicles
+                        WHERE (license_plate LIKE ? OR number LIKE ?)
+                        AND inactive = 0`,
+            [`%${query}%`, `%${query}%`],
+            
+            (error, results, field) => {
 
-            return result(results.map(vehicle => new Vehicle(vehicle)));
-        });
+                if (error) throw error;
+
+                return result(results.map(vehicle => new Vehicle(vehicle)));
+            });
+        }
+
+        catch (ex) {
+            result(null, err);
+        }
     }
 
     get (result) {
 
-        sql.query(`SELECT * FROM vehicles WHERE id = ?`,
-        [this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
+        try {
+
+            sql.query(`SELECT * FROM vehicles WHERE id = ?`,
+            [this.id],
             
-            const vehicle = results[0];
+            (error, results, field) => {
+        
+                if (error) throw error;
+                
+                const vehicle = results[0];
 
-            if (vehicle)
-                return result(new Vehicle(vehicle));
+                if (vehicle)
+                    return result(new Vehicle(vehicle));
 
-            result(null);
-        });
+                result(null);
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     load (result) {
 
-        sql.query(`SELECT * FROM vehicles`,
-        (error, results, field) => {
-    
-            if (error) throw error;
-            
-            result(results);
-        });
+        try {
+
+            sql.query(`SELECT * FROM vehicles`,
+            (error, results, field) => {
+        
+                if (error) throw error;
+                
+                result(results);
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     add (result) {
 
-        sql.query(`INSERT INTO vehicles 
-                    (number, license_plate, company_id, created_at)
-                    VALUES (?, ?, ?, ?)`,
-        [
-            this.number,
-            this.license_plate,
-            this.company_id,
-            new Date()
-        ],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result({
-                id: results.insertId,
-                number: this.number,
-                license_plate: this.license_plate,
-                company_id: this.company_id,
-                created_at: this.created_at
+        try {
+
+            sql.beginTransaction((error) => {
+
+                if (error) throw error;
+
+                sql.query(`INSERT INTO vehicles 
+                        (number, license_plate, company_id, created_at)
+                        VALUES (?, ?, ?, ?)`,
+                [
+                    this.number,
+                    this.license_plate,
+                    this.company_id,
+                    new Date()
+                ],
+                
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result({
+                        id: results.insertId,
+                        number: this.number,
+                        license_plate: this.license_plate,
+                        company_id: this.company_id,
+                        created_at: this.created_at
+                    });
+                });
             });
-        });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     garage (result) {
 
-        sql.query(`SELECT vehicles.* FROM vehicles
-                    INNER JOIN flow_records
-                    ON flow_records.vehicle_id = vehicles.id
-                    WHERE flow_records.arrival_id IS NOT NULL
-                    AND flow_records.departure_id IS NULL`,
+        try {
+
+            sql.query(`SELECT vehicles.* FROM vehicles
+                        INNER JOIN flow_records
+                        ON flow_records.vehicle_id = vehicles.id
+                        WHERE flow_records.arrival_id IS NOT NULL
+                        AND flow_records.departure_id IS NULL`,
         
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.map(vehicle => new Vehicle(vehicle)));
-        });
+            (error, results, field) => {
+        
+                if (error) throw error;
+        
+                result(results.map(vehicle => new Vehicle(vehicle)));
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     arrival (userId, result) {
 
-        this.garage((garage) => {
+        try {
 
-            const inGarage = garage.some(vehicle => vehicle.id == this.id);
+            this.garage((garage, error) => {
 
-            if (inGarage) return result(false);
-
-            sql.query(`INSERT INTO records (moment, user_id)
-                        VALUES (?, ?)`,
-            [new Date(), userId],
-            
-            (error, results, field) => {
-        
                 if (error) throw error;
-
-                sql.query(`INSERT INTO flow_records (arrival_id, vehicle_id)
+    
+                const inGarage = garage.some(vehicle => vehicle.id == this.id);
+    
+                if (inGarage) return result(false);
+    
+                sql.beginTransaction((error) => {
+    
+                    sql.query(`INSERT INTO records (moment, user_id)
                             VALUES (?, ?)`,
-                [results.insertId, this.id],
+                    [new Date(), userId],
+                    
+                    (error, results, field) => {
                 
-                (error, results, field) => {
-
-                    if (error) throw error;
-
-                    result(results.affectedRows > 0);
+                        if (error) throw error;
+    
+                        sql.query(`INSERT INTO flow_records (arrival_id, vehicle_id)
+                                    VALUES (?, ?)`,
+                        [results.insertId, this.id],
+                        
+                        (error, results, field) => {
+    
+                            if (error) throw error;
+    
+                            sql.commit();
+                            result(results.affectedRows > 0);
+                        });
+                    });
+    
                 });
             });
-        });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     departure (userId, result) {
 
-        this.garage((garage) => {
+        try {
+
+            this.garage((garage, error) => {
             
-            const inGarage = garage.some(vehicle => vehicle.id == this.id);
-        
-            if (!inGarage) return result(false);
-    
-            sql.query(`INSERT INTO records (moment, user_id)
-                        VALUES (?, ?)`,
-            [new Date(), userId],
-            
-            (error, results, field) => {
-        
                 if (error) throw error;
+    
+                const inGarage = garage.some(vehicle => vehicle.id == this.id);
+            
+                if (!inGarage) return result(false);
         
-                sql.query(`UPDATE flow_records 
-                            SET departure_id = ?
-                            WHERE vehicle_id = ?
-                            AND departure_id IS NULL`,
-                [results.insertId, this.id],
-                
-                (error, results, field) => {
-
+                sql.beginTransaction((error) => {
+    
                     if (error) throw error;
-
-                    result(results.changedRows > 0);
+    
+                    sql.query(`INSERT INTO records (moment, user_id)
+                            VALUES (?, ?)`,
+                    [new Date(), userId],
+                    
+                    (error, results, field) => {
+                
+                        if (error) throw error;
+                
+                        sql.query(`UPDATE flow_records 
+                                    SET departure_id = ?
+                                    WHERE vehicle_id = ?
+                                    AND departure_id IS NULL`,
+                        [results.insertId, this.id],
+                        
+                        (error, results, field) => {
+    
+                            if (error) throw error;
+    
+                            sql.commit();
+                            result(results.changedRows > 0);
+                        });
+                    });
+    
                 });
             });
-        });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     change (result) {
 
-        sql.query(`UPDATE vehicles
+        try {
+
+            sql.beginTransaction((error) => {
+
+                if (error) throw error;
+
+                sql.query(`UPDATE vehicles
                     SET number = ?, license_plate = ?
                     WHERE id = ?`,
-        [this.number, this.license_plate, this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.changedRows > 0);
-        });
+                [this.number, this.license_plate, this.id],
+                
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result(results.changedRows > 0);
+                });
+
+            });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     remove (result) {
 
-        if (error) throw error;
+        try {
+
+            sql.beginTransaction((error) => {
+
+                if (error) throw error;
     
-        sql.query(`UPDATE FROM vehicles
-                    SET inactive = 1 
-                    WHERE id = ?`,
-        [this.id],
-    
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.changedRows > 0);
-        });
+                sql.query(`UPDATE FROM vehicles
+                            SET inactive = 1 
+                            WHERE id = ?`,
+                [this.id],
+            
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result(results.changedRows > 0);
+                });
+
+            });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 }
 

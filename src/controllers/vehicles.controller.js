@@ -6,10 +6,12 @@ exports.search = (req, res, next) => {
 
         const model = new Vehicle({});
 
-        model.search(req.query.query, (result) => {
+        model.search(req.query.query, (vehicles, error) => {
 
-            if (result.length)
-                return res.status(200).send({ items: result });
+            if (error) throw error;
+
+            if (vehicles.length)
+                return res.status(200).send({ items: vehicles });
 
             res.status(404).send({ message: "vehicle_not_found" });
         });
@@ -26,10 +28,12 @@ exports.get = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.get((result) => {
+        model.get((vehicle, error) => {
 
-            if (result)
-                return res.status(200).send({ vehicle: result });
+            if (error) throw error;
+
+            if (vehicle)
+                return res.status(200).send({ vehicle: vehicle });
 
             res.status(404).send({ message: "vehicle_not_found" });
         });
@@ -46,10 +50,12 @@ exports.load = (req, res, next) => {
 
         const model = new Vehicle({});
 
-        model.load((result) => {
+        model.load((vehicles, error) => {
             
-            if (result.length)
-                return res.status(200).send({ items: result });
+            if (error) throw error;
+
+            if (vehicles.length)
+                return res.status(200).send({ items: vehicles });
 
             res.status(404).send({ message: "no_vehicle_registered" });
         });
@@ -66,10 +72,12 @@ exports.add = (req, res, next) => {
 
         const model = new Vehicle(req.body);
 
-        model.add((result) => {
+        model.add((vehicle, error) => {
 
-            if (result)
-                return res.status(201).send({ vehicle_added: result });
+            if (error) throw error;
+
+            if (vehicle)
+                return res.status(201).send({ vehicle_added: vehicle });
             
             res.status(406).send({ message: "invalid_vehicle" });
 
@@ -87,10 +95,12 @@ exports.garage = (req, res, next) => {
 
         const model = new Vehicle({});
 
-        model.garage((result) => {
+        model.garage((vehicles, error) => {
 
-            if (result)
-                return res.status(200).send({ items: result });
+            if (error) throw error;
+
+            if (vehicles.length)
+                return res.status(200).send({ items: vehicles });
             
             res.status(404).send({ message: "empty_garage" });
 
@@ -108,9 +118,11 @@ exports.arrival = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.arrival(req.context.id, (result) => {
+        model.arrival(req.context.id, (done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(201).send({ message: "arrival_registered" });
             
             res.status(406).send({ message: "arrival_not_registered" });
@@ -129,9 +141,11 @@ exports.departure = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.departure(req.context.id, (result) => {
+        model.departure(req.context.id, (done, error) => {
 
-            if (result) 
+            if (error) throw error;
+
+            if (done) 
                 return res.status(201).send({ message: "departure_registered" });
             
             res.status(406).send({ message: "departure_not_registered" });
@@ -150,9 +164,11 @@ exports.change = (req, res, next) => {
 
         const model = new Vehicle(req.body);
 
-        model.change((result) => {
+        model.change((done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(202).send({ message: "vehicle_changed" });
             
             res.status(304).send({ message: "vehicle_not_changed" }); 
@@ -170,9 +186,11 @@ exports.remove = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.remove((result) => {
+        model.remove((done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(202).send({ message: "vehicle_deleted" });
             
             res.status(304).send({ message: "vehicle_not_deleted" }); 
