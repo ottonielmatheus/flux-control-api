@@ -8,10 +8,12 @@ exports.get = (req, res, next) => {
 
         const model = new Company(req.params);
 
-        model.get((result) => {
+        model.get((company, error) => {
 
-            if (result) 
-                return res.status(200).send({ company: result });
+            if (error) throw error;
+
+            if (company) 
+                return res.status(200).send({ company: company });
             
             res.status(404).send({ message: "company_not_found" }); 
         });
@@ -28,10 +30,12 @@ exports.fleet = (req, res, next) => {
 
         const model = new Company(req.params);
 
-        model.fleet((result) => {
+        model.fleet((fleet, error) => {
 
-            if (result.length)
-                return res.status(200).send({ fleet: result });
+            if (error) throw error;
+
+            if (fleet.length)
+                return res.status(200).send({ fleet: fleet });
             
             res.status(404).send({ message: "company_doesnt_have_fleet" }); 
         });
@@ -48,10 +52,12 @@ exports.load = (req, res, next) => {
 
         const model = new Company({});
 
-        model.load((result) => {
+        model.load((companies, error) => {
 
-            if (result.length) 
-                return res.status(200).send({ items: result });
+            if (error) throw error;
+
+            if (companies.length) 
+                return res.status(200).send({ items: companies });
             
             res.status(404).send({ message: "no_company_registered" }); 
         });
@@ -75,10 +81,12 @@ exports.add = (req, res, next) => {
             req.body.thumbnail = result.url;
             const model = new Company(req.body);
 
-            model.add((result) => {
+            model.add((company, error) => {
 
-                if (result)
-                    return res.status(201).send({ company_added: result });
+                if (error) throw error;
+
+                if (company)
+                    return res.status(201).send({ company_added: company });
                 
                 res.status(406).send({ message: "invalid_company" }); 
             });
@@ -100,9 +108,11 @@ exports.change = (req, res, next) => {
 
         const model = new Company(req.body);
 
-        model.change((result) => {
+        model.change((done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(202).send({ message: "company_changed" });
             
             res.status(304).send({ message: "company_not_changed" }); 
@@ -120,9 +130,11 @@ exports.remove = (req, res, next) => {
 
         const model = new Company(req.params);
 
-        model.remove((result) => {
+        model.remove((done, error) => {
 
-            if (result)
+            if (error) throw error;
+
+            if (done)
                 return res.status(202).send({ message: "company_deleted" });
             
             res.status(304).send({ message: "company_not_deleted" }); 

@@ -15,101 +15,157 @@ class Company {
 
     fleet (result) {
 
-        sql.query(`SELECT * FROM vehicles WHERE company_id = ? AND inactive = 0`,
-        [this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
+        try {
 
-            result(results.map(vehicle => new Vehicle(vehicle)));
-        });
+            sql.query(`SELECT * FROM vehicles WHERE company_id = ? AND inactive = 0`,
+            [this.id],
+            
+            (error, results, field) => {
+        
+                if (error) throw error;
+
+                result(results.map(vehicle => new Vehicle(vehicle)));
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     };
 
     get (result) {
 
-        sql.query(`SELECT * FROM companies WHERE id = ?`,
-        [this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            const company = results[0];
+        try {
 
-            if (company)
-                return result(new Company(company));
+            sql.query(`SELECT * FROM companies WHERE id = ?`,
+            [this.id],
             
-            result(null);
-        });
+            (error, results, field) => {
+        
+                if (error) throw error;
+        
+                const company = results[0];
+
+                if (company)
+                    return result(new Company(company));
+                
+                result(null);
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     load (result) {
 
-        sql.query(`SELECT * FROM companies`,
-        (error, results, field) => {
-    
-            if (error) throw error;
-            
-            result(results.map(company => new Company(company)));
-        });
+        try {
+
+            sql.query(`SELECT * FROM companies`,
+            (error, results, field) => {
+        
+                if (error) throw error;
+                
+                result(results.map(company => new Company(company)));
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 
     add (result) {
 
-        sql.query(`INSERT INTO companies 
+        try {
+
+            sql.beginTransaction((error) => {
+
+                if (error) throw error;
+
+                sql.query(`INSERT INTO companies 
                     (name, thumbnail, color, created_at)
                     VALUES (?, ?, ?, ?)`,
-        [
-            this.name,
-            this.thumbnail,
-            this.color,
-            new Date()
-        ],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result({
-                id: results.insertId,
-                name: this.name,
-                thumbnail: this.thumbnail,
-                color: this.color
+                [
+                    this.name,
+                    this.thumbnail,
+                    this.color,
+                    new Date()
+                ],
+                
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result({
+                        id: results.insertId,
+                        name: this.name,
+                        thumbnail: this.thumbnail,
+                        color: this.color
+                    });
+                });
+
             });
-        });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     change (result) {
 
-        sql.query(`UPDATE companies
+        try {
+
+            sql.beginTransaction((error) => {
+
+                sql.query(`UPDATE companies
                     SET name = ?, thumbnail = ?, color = ?
                     WHERE id = ?`,
-        [this.name, this.thumbnail, this.color, this.id],
-        
-        (error, results, field) => {
-    
-            if (error) throw error;
-    
-            result(results.changedRows > 0);
-        });
+                [this.name, this.thumbnail, this.color, this.id],
+                
+                (error, results, field) => {
+            
+                    if (error) throw error;
+            
+                    sql.commit();
+                    result(results.changedRows > 0);
+                });
+
+            });
+        }
+
+        catch (ex) {
+            sql.rollback();
+            result(null, ex);
+        }
     }
 
     remove (result) {
 
-        if (error) throw error;
-    
-        sql.query(`UPDATE FROM companies
-                    SET inactive = 1 
-                    WHERE id = ?`,
-        [this.id],
-    
-        (error, results, field) => {
-    
+        try {
+
             if (error) throw error;
     
-            result(results.changedRows > 0);
-        });
+            sql.query(`UPDATE FROM companies
+                        SET inactive = 1 
+                        WHERE id = ?`,
+            [this.id],
+        
+            (error, results, field) => {
+        
+                if (error) throw error;
+        
+                result(results.changedRows > 0);
+            });
+        }
+
+        catch (ex) {
+            result(null, ex);
+        }
     }
 }
 
