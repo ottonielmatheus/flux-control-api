@@ -35,7 +35,7 @@ exports.load = (req, res, next) => {
             if (flowRecords.length)
                 return res.status(200).send({ items: flowRecords });
             
-            res.status(404).send({ message: "no_records_registered" }); 
+            res.status(404).send({ message: "no_record_registered" }); 
         });
     }
 

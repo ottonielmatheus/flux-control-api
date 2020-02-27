@@ -123,7 +123,7 @@ exports.arrival = (req, res, next) => {
             if (error) throw error;
 
             if (done)
-                return res.status(201).send({ message: "arrival_registered" });
+                return res.status(202).send({ message: "arrival_registered" });
             
             res.status(406).send({ message: "arrival_not_registered" });
 
@@ -146,7 +146,7 @@ exports.departure = (req, res, next) => {
             if (error) throw error;
 
             if (done) 
-                return res.status(201).send({ message: "departure_registered" });
+                return res.status(202).send({ message: "departure_registered" });
             
             res.status(406).send({ message: "departure_not_registered" });
 

@@ -20,6 +20,8 @@ class FlowRecord {
     
             else
                 this.departure = null;
+
+            this.inactive = flowRecord.inactive;
         }
     
         catch (ex) {

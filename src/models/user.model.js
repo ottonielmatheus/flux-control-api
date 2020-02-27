@@ -109,13 +109,12 @@ class User {
                 if (error) throw error;
 
                 sql.query(`INSERT INTO users 
-                    (id, name, email, password, role, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?)`,
+                    (id, name, email, role, created_at)
+                    VALUES (?, ?, ?, ?, ?)`,
                 [
                     this.id,
                     this.name,
                     this.email,
-                    this.password,
                     this.role,
                     new Date()
                 ],

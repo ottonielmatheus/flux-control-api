@@ -72,7 +72,7 @@ exports.load = (req, res, next) => {
             if (users.length) 
                 return res.status(200).send({ items: users });
             
-            res.status(404).send({ message: "no_user_registered" }); 
+            res.status(404).send({ message: "no_user_registered" });
         });
     }
 
@@ -136,8 +136,6 @@ exports.requestPassword = (req, res, next) => {
             if (error) throw error;
 
             if (token) {
-
-                console.log(model, token);
 
                 mailer.sendMail({
                     from: process.env.SYSTEM_EMAIL,
@@ -203,7 +201,7 @@ exports.remove = (req, res, next) => {
             if (done) 
                 return res.status(202).send({ message: "user_deleted" });
             
-            res.status(304).send({ message: "user_not_deleted" }); 
+            res.status(304).send({ message: "user_not_deleted" });
         });
     }
 
