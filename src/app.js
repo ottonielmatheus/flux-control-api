@@ -24,7 +24,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/companies', companies);
 app.use('/api/vehicles', vehicles);
 app.use('/api/users', users);
-app.use('/api/flow/records', flowRecords);
+app.use('/api/flow-records', flowRecords);
 
 app.use((req, res, next) => {
     res.status(404).send({ message: 'route_not_found' });
