@@ -222,22 +222,22 @@ class User {
                 if (error) throw error;
 
                 crypt.hash(this.password, salt, (error, hash) => {
-    
+
                     if (error) throw error;
-                
+
                     const now = new Date();
-            
+
                     sql.query(`UPDATE users
-                                INNER JOIN tokens ON tokens.id = users.token_id 
+                                INNER JOIN tokens ON tokens.id = users.token_id
                                 SET users.password = ?, tokens.expires = ?
                                 WHERE users.token_id = ?
                                 AND tokens.expires > ?`,
                     [hash, now, this.token_id, now],
-                    
+
                     (error, results, field) => {
-            
-                        if (error) throw error; 
-            
+
+                        if (error) throw error;
+
                         sql.commit();
                         result(results.changedRows > 0);
                     });

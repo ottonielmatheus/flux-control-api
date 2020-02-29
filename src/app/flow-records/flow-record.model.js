@@ -33,13 +33,13 @@ class FlowRecord {
 
         try {
 
-            sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
-                    arrival.moment arrival_moment, arrival.user_id arrival_user,
-                    departure.moment departure_moment, departure.user_id departure_user
-                    FROM flow_records flowRecord
-                    LEFT JOIN records arrival ON arrival.id = flowRecord.arrival_id
-                    LEFT JOIN records departure ON departure.id = flowRecord.departure_id
-                    WHERE flowRecord.id = ? AND flowRecord.inactive = 0`,
+            sql.query(`SELECT fr.id, fr.vehicle_id,
+                        ar.moment arrival_moment, ar.user_id arrival_user,
+                        dr.moment departure_moment, dr.user_id departure_user
+                        FROM flow_records fr
+                        LEFT JOIN records ar ON ar.id = fr.arrival_id
+                        LEFT JOIN records dr ON dr.id = fr.departure_id
+                        WHERE fr.id = ? AND fr.inactive = 0`,
             [this.id],
             
             (error, results, field) => {
