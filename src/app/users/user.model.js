@@ -1,6 +1,6 @@
 const crypt = require('bcrypt');
-const random = require('../utils/random');
-const sql = require('./database');
+const random = require('../../utils/random');
+const sql = require('../../db/database');
 
 const salt = 7;
 

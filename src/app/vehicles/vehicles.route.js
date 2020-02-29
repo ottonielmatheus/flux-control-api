@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authorize = require('../middlewares/authorize')
+const authorize = require('../../middlewares/authorize');
 
-const VehiclesController = require('../controllers/vehicles.controller');
+const VehiclesController = require('./vehicles.controller');
 
 router.get('/get/:id', authorize(), VehiclesController.get);
 router.get('/search', authorize(), VehiclesController.search);

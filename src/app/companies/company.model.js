@@ -1,5 +1,5 @@
-const sql = require('./database');
-const Vehicle = require('./vehicle.model');
+const sql = require('../../db/database');
+const Vehicle = require('../vehicles/vehicle.model');
 
 class Company {
     

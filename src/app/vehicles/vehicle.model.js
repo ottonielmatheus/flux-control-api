@@ -1,4 +1,4 @@
-const sql = require('./database');
+const sql = require('../../db/database');
 
 class Vehicle {
     

@@ -1,6 +1,6 @@
 const fs = require('fs');
-const cloudinary = require('../integrations/cloudinary.api');
-const Company = require('../models/company.model');
+const cloudinary = require('../../integrations/cloudinary.api');
+const Company = require('./company.model');
 
 exports.get = (req, res, next) => {
     

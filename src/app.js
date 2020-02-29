@@ -3,10 +3,10 @@ const bodyParser = require('body-parser');
 const config = require('./config/config');
 const app = express();
 
-const companies = require('./routes/companies.route');
-const vehicles = require('./routes/vehicles.route');
-const users = require('./routes/users.route');
-const flowRecords = require('./routes/flows-records.route');
+const companies = require('./app/companies/companies.route');
+const vehicles = require('./app/vehicles/vehicles.route');
+const users = require('./app/users/users.route');
+const flowRecords = require('./app/flow-records/flows-records.route');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

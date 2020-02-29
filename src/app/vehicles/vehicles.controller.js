@@ -1,4 +1,4 @@
-const Vehicle = require('../models/vehicle.model');
+const Vehicle = require('./vehicle.model');
 
 exports.search = (req, res, next) => {
 

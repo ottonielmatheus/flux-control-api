@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authorize = require('../middlewares/authorize');
+const authorize = require('../../middlewares/authorize');
 
-const FlowRecordsController = require('../controllers/flow-records.controller');
+const FlowRecordsController = require('./flow-records.controller');
 
 router.get('/get/:id', authorize(), FlowRecordsController.get);
 router.get('/', authorize(), FlowRecordsController.load);

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const mailer = require('../utils/mailer');
-const User = require('../models/user.model');
+const mailer = require('../../utils/mailer');
+const User = require('./user.model');
 
 exports.login = (req, res, next) => {
 

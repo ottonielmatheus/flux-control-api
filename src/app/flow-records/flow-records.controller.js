@@ -1,4 +1,4 @@
-const FlowRecord = require('../models/flow-record.model');
+const FlowRecord = require('./flow-record.model');
 
 exports.get = (req, res, next) => {
 

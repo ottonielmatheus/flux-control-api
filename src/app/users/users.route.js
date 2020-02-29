@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authorize = require('../middlewares/authorize');
+const authorize = require('../../middlewares/authorize');
 
-const UsersController = require('../controllers/users.controller');
+const UsersController = require('./users.controller');
 
 router.post('/login', UsersController.login);
 router.get('/', authorize(), UsersController.load);
