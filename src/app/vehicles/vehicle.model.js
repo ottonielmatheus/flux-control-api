@@ -10,9 +10,10 @@ class Vehicle {
 
         if (vehicle.arrival_moment || vehicle.departure_moment) {
 
-            this.last_record = vehicle.departure_moment ?
-            { moment: vehicle.departure_moment, departure: true }
-            : { moment: vehicle.arrival_moment, departure: false };
+            this.last_record = {
+                moment: vehicle.departure_moment || vehicle.arrival_moment,
+                departure: !!vehicle.departure_moment
+            };
         }
 
         else

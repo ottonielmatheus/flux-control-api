@@ -7,23 +7,23 @@ class FlowRecord {
         try {
             this.id = flowRecord.id,
             this.vehicle_id = flowRecord.vehicle_id,
-            this.arrival = { 
+            this.arrival = {
                 moment: flowRecord.arrival_moment,
-                user_id: flowRecord.arrival_user 
+                user_id: flowRecord.arrival_user
             }
-    
+
             if (flowRecord.departure_moment)
-                this.departure = { 
+                this.departure = {
                     moment: flowRecord.departure_moment,
-                    user_id: flowRecord.departure_user 
+                    user_id: flowRecord.departure_user
                 }
-    
+
             else
                 this.departure = null;
 
             this.inactive = flowRecord.inactive;
         }
-    
+
         catch (ex) {
             return null;
         }
@@ -41,11 +41,11 @@ class FlowRecord {
                         LEFT JOIN records dr ON dr.id = fr.departure_id
                         WHERE fr.id = ? AND fr.inactive = 0`,
             [this.id],
-            
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
-        
+
                 const flowRecord = results[0];
 
                 if (flowRecord)
