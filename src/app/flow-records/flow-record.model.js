@@ -5,6 +5,7 @@ class FlowRecord {
     constructor (flowRecord) {
 
         try {
+
             this.id = flowRecord.id,
             this.vehicle_id = flowRecord.vehicle_id,
             this.arrival = {
@@ -33,13 +34,8 @@ class FlowRecord {
 
         try {
 
-            sql.query(`SELECT fr.id, fr.vehicle_id,
-                        ar.moment arrival_moment, ar.user_id arrival_user,
-                        dr.moment departure_moment, dr.user_id departure_user
-                        FROM flow_records fr
-                        LEFT JOIN records ar ON ar.id = fr.arrival_id
-                        LEFT JOIN records dr ON dr.id = fr.departure_id
-                        WHERE fr.id = ? AND fr.inactive = 0`,
+            sql.query(`SELECT * FROM flow_records
+                        WHERE id = ? AND inactive = 0`,
             [this.id],
 
             (error, results, field) => {
@@ -64,18 +60,13 @@ class FlowRecord {
 
         try {
 
-            sql.query(`SELECT flowRecord.id, flowRecord.vehicle_id,
-                    arrival.moment arrival_moment, arrival.user_id arrival_user,
-                    departure.moment departure_moment, departure.user_id departure_user
-                    FROM flow_records flowRecord
-                    LEFT JOIN records arrival ON arrival.id = flowRecord.arrival_id
-                    LEFT JOIN records departure ON departure.id = flowRecord.departure_id
-                    WHERE flowRecord.inactive = 0`,
-    
+            sql.query(`SELECT * FROM flow_records
+                        WHERE inactive = 0`,
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
-        
+
                 result(results.map(flowRecord => new FlowRecord(flowRecord)));
             });
         }
@@ -92,20 +83,20 @@ class FlowRecord {
             sql.beginTransaction((error) => {
 
                 if (error) throw error;
-               
+
                 sql.query(`UPDATE flow_records
-                        SET inactive = 1
-                        WHERE id = ?`,
+                            SET inactive = 1
+                            WHERE id = ?`,
                 [this.id],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });
-                
+
             });
         }
 

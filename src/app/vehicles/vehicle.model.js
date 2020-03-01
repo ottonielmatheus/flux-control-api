@@ -29,8 +29,8 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        ar.moment arrival_moment,
-                        dr.moment departure_moment
+                        fr.arrival_moment,
+                        fr.departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
@@ -38,8 +38,6 @@ class Vehicle {
                             ORDER BY flow_records.id DESC
                             LIMIT 1
                         ) fr ON fr.vehicle_id = v.id
-                        LEFT JOIN records ar ON ar.id = fr.arrival_id
-                        LEFT JOIN records dr ON dr.id = fr.departure_id
                         WHERE (v.license_plate LIKE ? OR v.number LIKE ?)
                         AND v.inactive = 0`,
             [`%${query}%`, `%${query}%`],
@@ -62,8 +60,8 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        ar.moment arrival_moment,
-                        dr.moment departure_moment
+                        fr.arrival_moment,
+                        fr.departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
@@ -71,8 +69,6 @@ class Vehicle {
                             ORDER BY flow_records.id DESC
                             LIMIT 1
                         ) fr ON fr.vehicle_id = v.id
-                        LEFT JOIN records ar ON ar.id = fr.arrival_id
-                        LEFT JOIN records dr ON dr.id = fr.departure_id
                         WHERE v.id = ?`,
             [this.id],
 
@@ -99,17 +95,15 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        ar.moment arrival_moment,
-                        dr.moment departure_moment
+                        fr.arrival_moment,
+                        fr.departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
                             FROM flow_records
                             ORDER BY flow_records.id DESC
                             LIMIT 1
-                        ) fr ON fr.vehicle_id = v.id
-                        LEFT JOIN records ar ON ar.id = fr.arrival_id
-                        LEFT JOIN records dr ON dr.id = fr.departure_id`,
+                        ) fr ON fr.vehicle_id = v.id`,
             (error, results, field) => {
 
                 if (error) throw error;
@@ -132,8 +126,8 @@ class Vehicle {
                 if (error) throw error;
 
                 sql.query(`INSERT INTO vehicles
-                        (number, license_plate, company_id, created_at)
-                        VALUES (?, ?, ?, ?)`,
+                            (number, license_plate, company_id, created_at)
+                            VALUES (?, ?, ?, ?)`,
                 [
                     this.number,
                     this.license_plate,
@@ -168,8 +162,8 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        ar.moment arrival_moment,
-                        dr.moment departure_moment
+                        fr.arrival_moment,
+                        fr.departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
@@ -177,10 +171,8 @@ class Vehicle {
                             ORDER BY flow_records.id DESC
                             LIMIT 1
                         ) fr ON fr.vehicle_id = v.id
-                        LEFT JOIN records ar ON ar.id = fr.arrival_id
-                        LEFT JOIN records dr ON dr.id = fr.departure_id
-                        WHERE fr.arrival_id IS NOT NULL
-                        AND fr.departure_id IS NULL`,
+                        WHERE fr.arrival_moment IS NOT NULL
+                        AND fr.departure_moment IS NULL`,
 
             (error, results, field) => {
 
@@ -202,36 +194,27 @@ class Vehicle {
             this.garage((garage, error) => {
 
                 if (error) throw error;
-    
+
                 const inGarage = garage.some(vehicle => vehicle.id == this.id);
-    
+
                 if (inGarage) return result(false);
-    
+
                 sql.beginTransaction((error) => {
 
                     if (error) throw error;
-    
-                    sql.query(`INSERT INTO records (moment, user_id)
-                                VALUES (?, ?)`,
-                    [new Date(), userId],
-                    
+
+                    sql.query(`INSERT INTO flow_records (arrival_moment, arrival_user, vehicle_id)
+                                VALUES (?, ?, ?)`,
+                    [new Date(), userId, this.id],
+
                     (error, results, field) => {
-                
+
                         if (error) throw error;
-    
-                        sql.query(`INSERT INTO flow_records (arrival_id, vehicle_id)
-                                    VALUES (?, ?)`,
-                        [results.insertId, this.id],
-                        
-                        (error, results, field) => {
-    
-                            if (error) throw error;
-    
-                            sql.commit();
-                            result(results.affectedRows > 0);
-                        });
+
+                        sql.commit();
+                        result(results.affectedRows > 0);
                     });
-    
+
                 });
             });
         }
@@ -247,40 +230,32 @@ class Vehicle {
         try {
 
             this.garage((garage, error) => {
-            
+
                 if (error) throw error;
-    
+
                 const inGarage = garage.some(vehicle => vehicle.id == this.id);
-            
+
                 if (!inGarage) return result(false);
-        
+
                 sql.beginTransaction((error) => {
-    
+
                     if (error) throw error;
-    
-                    sql.query(`INSERT INTO records (moment, user_id)
-                                VALUES (?, ?)`,
-                    [new Date(), userId],
-                    
+
+                    sql.query(`UPDATE flow_records
+                                SET departure_moment = ?,
+                                departure_user = ?
+                                WHERE vehicle_id = ?
+                                AND departure_moment IS NULL`,
+                    [new Date(), userId, this.id],
+
                     (error, results, field) => {
-                
+
                         if (error) throw error;
-                
-                        sql.query(`UPDATE flow_records 
-                                    SET departure_id = ?
-                                    WHERE vehicle_id = ?
-                                    AND departure_id IS NULL`,
-                        [results.insertId, this.id],
-                        
-                        (error, results, field) => {
-    
-                            if (error) throw error;
-    
-                            sql.commit();
-                            result(results.changedRows > 0);
-                        });
+
+                        sql.commit();
+                        result(results.changedRows > 0);
                     });
-    
+
                 });
             });
         }
@@ -303,11 +278,11 @@ class Vehicle {
                             SET number = ?, license_plate = ?
                             WHERE id = ?`,
                 [this.number, this.license_plate, this.id],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });
@@ -328,16 +303,16 @@ class Vehicle {
             sql.beginTransaction((error) => {
 
                 if (error) throw error;
-    
+
                 sql.query(`UPDATE FROM vehicles
-                            SET inactive = 1 
+                            SET inactive = 1
                             WHERE id = ?`,
                 [this.id],
-            
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });

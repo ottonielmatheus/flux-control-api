@@ -36,20 +36,15 @@ CREATE TABLE tokens (
   expires DATETIME NOT NULL
 );
 
-CREATE TABLE records (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  moment DATETIME NOT NULL,
-  user_id INT UNSIGNED NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
 CREATE TABLE flow_records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   inactive BOOLEAN DEFAULT(0) NOT NULL,
-  arrival_id INT UNSIGNED NOT NULL,
-  departure_id INT UNSIGNED,
+  arrival_moment DATETIME NOT NULL,
+  arrival_user INT UNSIGNED NOT NULL,
+  departure_moment DATETIME,
+  departure_user INT UNSIGNED,
   vehicle_id INT UNSIGNED NOT NULL,
-  FOREIGN KEY (arrival_id) REFERENCES records(id),
-  FOREIGN KEY (departure_id) REFERENCES records(id),
+  FOREIGN KEY (arrival_user) REFERENCES users(id),
+  FOREIGN KEY (departure_user) REFERENCES users(id),
   FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
