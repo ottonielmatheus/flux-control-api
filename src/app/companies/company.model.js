@@ -2,13 +2,13 @@ const sql = require('../../db/database');
 const Vehicle = require('../vehicles/vehicle.model');
 
 class Company {
-    
+
     constructor (company) {
 
         this.id = company.id;
         this.name = company.name;
         this.thumbnail = company.thumbnail;
-        this.color = company.color;
+        this.color = company.color ? company.color.toUpperCase() : null;
         this.created_at = company.created_at;
         this.inactive = company.inactive;
     }
@@ -19,9 +19,9 @@ class Company {
 
             sql.query(`SELECT * FROM vehicles WHERE company_id = ? AND inactive = 0`,
             [this.id],
-            
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
 
                 result(results.map(vehicle => new Vehicle(vehicle)));
@@ -39,16 +39,16 @@ class Company {
 
             sql.query(`SELECT * FROM companies WHERE id = ?`,
             [this.id],
-            
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
-        
+
                 const company = results[0];
 
                 if (company)
                     return result(new Company(company));
-                
+
                 result(null);
             });
         }
@@ -64,9 +64,9 @@ class Company {
 
             sql.query(`SELECT * FROM companies`,
             (error, results, field) => {
-        
+
                 if (error) throw error;
-                
+
                 result(results.map(company => new Company(company)));
             });
         }
@@ -84,7 +84,7 @@ class Company {
 
                 if (error) throw error;
 
-                sql.query(`INSERT INTO companies 
+                sql.query(`INSERT INTO companies
                     (name, thumbnail, color, created_at)
                     VALUES (?, ?, ?, ?)`,
                 [
@@ -93,11 +93,11 @@ class Company {
                     this.color,
                     new Date()
                 ],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result({
                         id: results.insertId,
@@ -126,11 +126,11 @@ class Company {
                     SET name = ?, thumbnail = ?, color = ?
                     WHERE id = ?`,
                 [this.name, this.thumbnail, this.color, this.id],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });
@@ -149,16 +149,16 @@ class Company {
         try {
 
             if (error) throw error;
-    
+
             sql.query(`UPDATE FROM companies
-                        SET inactive = 1 
+                        SET inactive = 1
                         WHERE id = ?`,
             [this.id],
-        
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
-        
+
                 sql.commit();
                 result(results.changedRows > 0);
             });

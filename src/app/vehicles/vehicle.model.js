@@ -6,7 +6,7 @@ class Vehicle {
 
         this.id = vehicle.id;
         this.number = vehicle.number;
-        this.license_plate = vehicle.license_plate;
+        this.license_plate = vehicle.license_plate ? vehicle.license_plate.toUpperCase() : null;
 
         if (vehicle.arrival_moment || vehicle.departure_moment) {
 
