@@ -23,7 +23,7 @@ exports.search = (req, res, next) => {
 };
 
 exports.get = (req, res, next) => {
-    
+
     try {
 
         const model = new Vehicle(req.params);
@@ -51,7 +51,7 @@ exports.load = (req, res, next) => {
         const model = new Vehicle({});
 
         model.load((vehicles, error) => {
-            
+
             if (error) throw error;
 
             if (vehicles.length)
@@ -101,7 +101,7 @@ exports.garage = (req, res, next) => {
 
             if (vehicles.length)
                 return res.status(200).send({ items: vehicles });
-            
+
             res.status(404).send({ message: "empty_garage" });
 
         });
@@ -123,9 +123,9 @@ exports.arrival = (req, res, next) => {
             if (error) throw error;
 
             if (done)
-                return res.status(202).send({ message: "arrival_registered" });
-            
-            res.status(406).send({ message: "arrival_not_registered" });
+                return res.status(202).send({ message: "arrival_recorded" });
+
+            res.status(406).send({ message: "arrival_not_recorded" });
 
         });
     }
@@ -136,7 +136,7 @@ exports.arrival = (req, res, next) => {
 };
 
 exports.departure = (req, res, next) => {
-    
+
     try {
 
         const model = new Vehicle(req.params);
@@ -145,10 +145,10 @@ exports.departure = (req, res, next) => {
 
             if (error) throw error;
 
-            if (done) 
-                return res.status(202).send({ message: "departure_registered" });
-            
-            res.status(406).send({ message: "departure_not_registered" });
+            if (done)
+                return res.status(202).send({ message: "departure_recorded" });
+
+            res.status(406).send({ message: "departure_not_recorded" });
 
         });
     }
