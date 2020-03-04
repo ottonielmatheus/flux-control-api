@@ -12,7 +12,7 @@ class Vehicle {
 
             this.last_record = {
                 moment: vehicle.departure_moment || vehicle.arrival_moment,
-                departure: !!vehicle.departure_moment
+                onGarage: !vehicle.departure_moment
             };
         }
 

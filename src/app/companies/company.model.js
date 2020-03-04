@@ -17,7 +17,18 @@ class Company {
 
         try {
 
-            sql.query(`SELECT * FROM vehicles WHERE company_id = ? AND inactive = 0`,
+            sql.query(`SELECT v.*,
+                        fr.arrival_moment,
+                        fr.departure_moment
+                        FROM vehicles v
+                        LEFT JOIN (
+                            SELECT *
+                            FROM flow_records
+                            ORDER BY flow_records.id DESC
+                            LIMIT 1
+                        ) fr ON fr.vehicle_id = v.id
+                        WHERE v.company_id = ?
+                        AND v.inactive = 0`,
             [this.id],
 
             (error, results, field) => {
