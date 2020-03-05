@@ -3,7 +3,7 @@ const cloudinary = require('../../integrations/cloudinary.api');
 const Company = require('./company.model');
 
 exports.get = (req, res, next) => {
-    
+
     try {
 
         const model = new Company(req.params);
@@ -12,10 +12,10 @@ exports.get = (req, res, next) => {
 
             if (error) throw error;
 
-            if (company) 
+            if (company)
                 return res.status(200).send({ company: company });
-            
-            res.status(404).send({ message: "company_not_found" }); 
+
+            res.status(404).send({ message: "company_not_found" });
         });
     }
 
@@ -36,8 +36,8 @@ exports.fleet = (req, res, next) => {
 
             if (fleet.length)
                 return res.status(200).send({ fleet: fleet });
-            
-            res.status(404).send({ message: "company_doesnt_have_fleet" }); 
+
+            res.status(404).send({ message: "company_doesnt_have_fleet" });
         });
     }
 

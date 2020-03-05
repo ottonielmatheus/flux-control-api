@@ -29,17 +29,16 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        fr.arrival_moment,
-                        fr.departure_moment
+                        MAX(fr.arrival_moment) arrival_moment,
+                        IF(MAX(fr.departure_moment) > MAX(fr.arrival_moment), MAX(fr.departure_moment), NULL) departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
                             FROM flow_records
-                            ORDER BY flow_records.id DESC
-                            LIMIT 1
                         ) fr ON fr.vehicle_id = v.id
                         WHERE (v.license_plate LIKE ? OR v.number LIKE ?)
-                        AND v.inactive = 0`,
+                        AND v.inactive = 0
+                        GROUP BY v.id`,
             [`%${query}%`, `%${query}%`],
 
             (error, results, field) => {
@@ -60,16 +59,15 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        fr.arrival_moment,
-                        fr.departure_moment
+                        MAX(fr.arrival_moment) arrival_moment,
+                        IF(MAX(fr.departure_moment) > MAX(fr.arrival_moment), MAX(fr.departure_moment), NULL) departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
                             FROM flow_records
-                            ORDER BY flow_records.id DESC
-                            LIMIT 1
                         ) fr ON fr.vehicle_id = v.id
-                        WHERE v.id = ?`,
+                        WHERE v.id = ?
+                        GROUP BY v.id`,
             [this.id],
 
             (error, results, field) => {
@@ -95,15 +93,15 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        fr.arrival_moment,
-                        fr.departure_moment
+                        MAX(fr.arrival_moment) arrival_moment,
+                        IF(MAX(fr.departure_moment) > MAX(fr.arrival_moment), MAX(fr.departure_moment), NULL) departure_moment
                         FROM vehicles v
                         LEFT JOIN (
                             SELECT *
                             FROM flow_records
-                            ORDER BY flow_records.id DESC
-                            LIMIT 1
-                        ) fr ON fr.vehicle_id = v.id`,
+                        ) fr ON fr.vehicle_id = v.id
+                        WHERE v.inactive = 0
+                        GROUP BY v.id`,
             (error, results, field) => {
 
                 if (error) throw error;
@@ -162,17 +160,17 @@ class Vehicle {
         try {
 
             sql.query(`SELECT v.*,
-                        fr.arrival_moment,
-                        fr.departure_moment
-                        FROM vehicles v
-                        LEFT JOIN (
-                            SELECT *
-                            FROM flow_records
-                            ORDER BY flow_records.id DESC
-                            LIMIT 1
-                        ) fr ON fr.vehicle_id = v.id
-                        WHERE fr.arrival_moment IS NOT NULL
-                        AND fr.departure_moment IS NULL`,
+                MAX(fr.arrival_moment) arrival_moment,
+                IF(MAX(fr.departure_moment) > MAX(fr.arrival_moment), MAX(fr.departure_moment), NULL) departure_moment
+                FROM vehicles v
+                LEFT JOIN (
+                    SELECT *
+                    FROM flow_records
+                ) fr ON fr.vehicle_id = v.id
+                WHERE fr.arrival_moment IS NOT NULL
+                AND fr.departure_moment IS NULL
+                AND v.inactive = 0
+                GROUP BY v.id`,
 
             (error, results, field) => {
 
