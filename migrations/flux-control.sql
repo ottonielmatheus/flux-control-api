@@ -19,6 +19,11 @@ CREATE TABLE vehicles (
   FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
+CREATE TABLE tokens (
+  id VARCHAR(64) PRIMARY KEY,
+  expires DATETIME NOT NULL
+);
+
 CREATE TABLE users (
   id INT UNSIGNED PRIMARY KEY,
   name VARCHAR(60) NOT NULL,
@@ -29,11 +34,6 @@ CREATE TABLE users (
   inactive BOOLEAN DEFAULT(0) NOT NULL,
   token_id VARCHAR(64),
   FOREIGN KEY (token_id) REFERENCES tokens(id)
-);
-
-CREATE TABLE tokens (
-  id VARCHAR(64) PRIMARY KEY,
-  expires DATETIME NOT NULL
 );
 
 CREATE TABLE flow_records (

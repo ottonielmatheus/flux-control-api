@@ -56,10 +56,10 @@ exports.load = (req, res, next) => {
 
             if (error) throw error;
 
-            if (companies.length) 
+            if (companies.length)
                 return res.status(200).send({ items: companies });
-            
-            res.status(404).send({ message: "no_company_registered" }); 
+
+            res.status(404).send({ message: "no_company_registered" });
         });
     }
 
@@ -72,9 +72,7 @@ exports.add = (req, res, next) => {
 
     try {
 
-        const img = req.file;
-
-        cloudinary.uploader.upload(img.path, (error, result) => {
+        cloudinary.uploader.upload(req.file.path, (error, result) => {
 
             if (error) throw error;
 
@@ -87,8 +85,8 @@ exports.add = (req, res, next) => {
 
                 if (company)
                     return res.status(201).send({ company_added: company });
-                
-                res.status(406).send({ message: "invalid_company" }); 
+
+                res.status(406).send({ message: "invalid_company" });
             });
         });
     }
@@ -106,16 +104,22 @@ exports.change = (req, res, next) => {
 
     try {
 
-        const model = new Company(req.body);
-
-        model.change((done, error) => {
+        cloudinary.uploader.upload(req.file.path, (error, result) => {
 
             if (error) throw error;
 
-            if (done)
-                return res.status(202).send({ message: "company_changed" });
-            
-            res.status(304).send({ message: "company_not_changed" }); 
+            req.body.thumbnail = result.url;
+            const model = new Company(req.body);
+
+            model.change((done, error) => {
+
+                if (error) throw error;
+
+                if (done)
+                    return res.status(202).send({ message: "company_changed" });
+
+                res.status(304).send({ message: "company_not_changed" });
+            });
         });
     }
 
