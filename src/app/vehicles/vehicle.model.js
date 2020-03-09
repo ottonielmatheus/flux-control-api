@@ -201,16 +201,20 @@ class Vehicle {
 
                     if (error) throw error;
 
+                    const moment = new Date();
+
                     sql.query(`INSERT INTO flow_records (arrival_moment, arrival_user, vehicle_id)
                                 VALUES (?, ?, ?)`,
-                    [new Date(), userId, this.id],
+                    [moment, userId, this.id],
 
                     (error, results, field) => {
 
                         if (error) throw error;
 
                         sql.commit();
-                        result(results.affectedRows > 0);
+                        if (results.affectedRows > 0) result(moment);
+
+                        return null;
                     });
 
                 });
@@ -239,19 +243,23 @@ class Vehicle {
 
                     if (error) throw error;
 
+                    const moment = new Date();
+
                     sql.query(`UPDATE flow_records
                                 SET departure_moment = ?,
                                 departure_user = ?
                                 WHERE vehicle_id = ?
                                 AND departure_moment IS NULL`,
-                    [new Date(), userId, this.id],
+                    [moment, userId, this.id],
 
                     (error, results, field) => {
 
                         if (error) throw error;
 
                         sql.commit();
-                        result(results.changedRows > 0);
+                        if (results.changedRows > 0) return result(moment);
+
+                        return null;
                     });
 
                 });

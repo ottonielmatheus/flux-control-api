@@ -78,7 +78,7 @@ exports.add = (req, res, next) => {
 
             if (vehicle)
                 return res.status(201).send({ vehicle_added: vehicle });
-            
+
             res.status(406).send({ message: "invalid_vehicle" });
 
         });
@@ -90,7 +90,7 @@ exports.add = (req, res, next) => {
 };
 
 exports.garage = (req, res, next) => {
-    
+
     try {
 
         const model = new Vehicle({});
@@ -118,12 +118,12 @@ exports.arrival = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.arrival(req.context.id, (done, error) => {
+        model.arrival(req.context.id, (moment, error) => {
 
             if (error) throw error;
 
-            if (done)
-                return res.status(202).send({ message: "arrival_recorded" });
+            if (moment)
+                return res.status(202).send({ moment: moment, message: "arrival_recorded" });
 
             res.status(406).send({ message: "arrival_not_recorded" });
 
@@ -141,12 +141,12 @@ exports.departure = (req, res, next) => {
 
         const model = new Vehicle(req.params);
 
-        model.departure(req.context.id, (done, error) => {
+        model.departure(req.context.id, (moment, error) => {
 
             if (error) throw error;
 
-            if (done)
-                return res.status(202).send({ message: "departure_recorded" });
+            if (moment)
+                return res.status(202).send({ moment: moment, message: "departure_recorded" });
 
             res.status(406).send({ message: "departure_not_recorded" });
 
@@ -170,8 +170,8 @@ exports.change = (req, res, next) => {
 
             if (done)
                 return res.status(202).send({ message: "vehicle_changed" });
-            
-            res.status(304).send({ message: "vehicle_not_changed" }); 
+
+            res.status(304).send({ message: "vehicle_not_changed" });
         });
     }
 
@@ -192,8 +192,8 @@ exports.remove = (req, res, next) => {
 
             if (done)
                 return res.status(202).send({ message: "vehicle_deleted" });
-            
-            res.status(304).send({ message: "vehicle_not_deleted" }); 
+
+            res.status(304).send({ message: "vehicle_not_deleted" });
         });
     }
 
