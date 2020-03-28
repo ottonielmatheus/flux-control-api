@@ -1,110 +1,131 @@
 const sql = require('../../db/database');
 
+
 class FlowRecord {
 
-    constructor (flowRecord) {
+  constructor (flowRecord) {
 
-        try {
+    try {
 
-            this.id = flowRecord.id,
-            this.vehicle_id = flowRecord.vehicle_id,
-            this.arrival = {
-                moment: flowRecord.arrival_moment,
-                user_id: flowRecord.arrival_user
-            }
-
-            if (flowRecord.departure_moment)
-                this.departure = {
-                    moment: flowRecord.departure_moment,
-                    user_id: flowRecord.departure_user
-                }
-
-            else
-                this.departure = null;
-
-            this.inactive = flowRecord.inactive;
+      this.id = flowRecord.id,
+        this.vehicle_id = flowRecord.vehicle_id,
+        this.arrival = {
+          moment: flowRecord.arrival_moment,
+          user_id: flowRecord.arrival_user
         }
 
-        catch (ex) {
-            return null;
+      if (flowRecord.departure_moment)
+        this.departure = {
+          moment: flowRecord.departure_moment,
+          user_id: flowRecord.departure_user
         }
+
+      else
+        this.departure = null;
+
+      this.inactive = flowRecord.inactive;
     }
 
-    get (result) {
+    catch (ex) {
+      return null;
+    }
+  }
 
-        try {
+  get (callback) {
 
-            sql.query(`SELECT * FROM flow_records
-                        WHERE id = ? AND inactive = 0`,
-            [this.id],
+    try {
 
-            (error, results, field) => {
+      sql.query(`SELECT * FROM flow_records
+                  WHERE id = ? AND inactive = 0`,
+      [this.id],
 
-                if (error) throw error;
+      (error, results, field) => {
 
-                const flowRecord = results[0];
+        if (error) throw error;
+        const flowRecord = results[0];
 
-                if (flowRecord)
-                    return result(new FlowRecord(flowRecord));
-
-                result(null);
-            });
+        if (flowRecord) {
+          return callback(new FlowRecord(flowRecord));
         }
 
-        catch (ex) {
-            result(null, ex);
+        callback(null);
+      });
+
+    } catch (ex) {
+      callback(null, ex);
+    }
+  }
+
+  getHistoric (vehicleId, callback) {
+
+    try {
+
+      sql.query(`SELECT * FROM flow_records
+                  WHERE vehicle_id = ? AND inactive = 0`,
+      [vehicleId],
+      (error, results, field) => {
+
+        if (error) throw error;
+        const flowRecord = results[0];
+
+        if (flowRecord) {
+          return callback(results.map(flowRecord => new FlowRecord(flowRecord)));
         }
+
+        callback(null);
+      });
+
+    } catch (ex) {
+      callback(null, ex);
     }
 
-    load (result) {
+  }
 
-        try {
+  load (callback) {
 
-            sql.query(`SELECT * FROM flow_records
-                        WHERE inactive = 0`,
+    try {
 
-            (error, results, field) => {
+      sql.query(`SELECT * FROM flow_records
+                  WHERE inactive = 0`,
 
-                if (error) throw error;
+      (error, results, field) => {
 
-                result(results.map(flowRecord => new FlowRecord(flowRecord)));
-            });
-        }
+        if (error) throw error;
+        callback(results.map(flowRecord => new FlowRecord(flowRecord)));
+      });
 
-        catch (ex) {
-            result(null, ex);
-        }
+    } catch (ex) {
+      callback(null, ex);
     }
+  }
 
-    remove (result) {
+  remove (callback) {
 
-        try {
+    try {
 
-            sql.beginTransaction((error) => {
+      sql.beginTransaction((error) => {
 
-                if (error) throw error;
+        if (error) throw error;
 
-                sql.query(`UPDATE flow_records
-                            SET inactive = 1
-                            WHERE id = ?`,
-                [this.id],
+        sql.query(`UPDATE flow_records
+                    SET inactive = 1
+                    WHERE id = ?`,
+        [this.id],
+        (error, results, field) => {
 
-                (error, results, field) => {
+          if (error) throw error;
 
-                    if (error) throw error;
+          sql.commit();
+          callback(results.changedRows > 0);
+        });
 
-                    sql.commit();
-                    result(results.changedRows > 0);
-                });
+      });
 
-            });
-        }
-
-        catch (ex) {
-            sql.rollback();
-            result(null, ex);
-        }
+    } catch (ex) {
+      sql.rollback();
+      callback(null, ex);
     }
+  }
 };
 
 module.exports = FlowRecord;

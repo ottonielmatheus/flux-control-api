@@ -1,67 +1,81 @@
 const FlowRecord = require('./flow-record.model');
 
-exports.get = (req, res, next) => {
+const get = (req, res, next) => {
 
-    try {
+  try {
 
-        const model = new FlowRecord(req.params);
+    const model = new FlowRecord(req.params);
+    model.get((flowRecord, error) => {
 
-        model.get((flowRecord, error) => {
+      if (error) throw error;
+      if (flowRecord) {
+        return res.status(200).send({ flowRecord: flowRecord });
+      }
+      res.status(404).send({ message: "record_not_found" });
+    });
 
-            if (error) throw error;
+  } catch (ex) {
+    res.status(500).send({ error: ex.message });
+  }
+}
 
-            if (flowRecord)
-                return res.status(200).send({ flowRecord: flowRecord });
-            
-            res.status(404).send({ message: "record_not_found" }); 
-        });
-    }
+const load = (req, res, next) => {
 
-    catch (ex) {
-        res.status(500).send({ error: ex.message });
-    }
-};
+  try {
 
-exports.load = (req, res, next) => {
+    const model = new FlowRecord({});
+    model.load((flowRecords, error) => {
+      if (error) throw error;
+      if (flowRecords.length) {
+        return res.status(200).send({ items: flowRecords });
+      }
+      res.status(404).send({ message: "no_record_registered" });
+    });
 
-    try {
+  } catch (ex) {
+    res.status(500).send({ error: ex.message });
+  }
+}
 
-        const model = new FlowRecord({});
+const getHistoric = (req, res, next) => {
 
-        model.load((flowRecords, error) => {
+  try {
 
-            if (error) throw error;
+    const model = new FlowRecord({});
+    model.getHistoric(req.params.vehicleId, (flowRecords, error) => {
+      if (error) throw error;
+      if (flowRecords.length) {
+        return res.status(200).send({ items: flowRecords });
+      }
+      res.status(404).send({ message: "no_record_registered" });
+    });
 
-            if (flowRecords.length)
-                return res.status(200).send({ items: flowRecords });
-            
-            res.status(404).send({ message: "no_record_registered" }); 
-        });
-    }
+  } catch (ex) {
+    res.status(500).send({ error: ex.message });
+  }
+}
 
-    catch (ex) {
-        res.status(500).send({ error: ex.message });
-    }
-};
+const remove = (req, res, next) => {
 
-exports.remove = (req, res, next) => {
-    
-    try {
+  try {
 
-        const model = new FlowRecord(req.params);
+    const model = new FlowRecord(req.params);
+    model.remove((done, error) => {
+      if (error) throw error;
+      if (done) {
+        return res.status(202).send({ message: "record_deleted" });
+      }
+      res.status(304).send({ message: "record_not_deleted" });
+    });
 
-        model.remove((done, error) => {
+  } catch (ex) {
+    res.status(500).send({ error: ex.message });
+  }
+}
 
-            if (error) throw error;
-
-            if (done)
-                return res.status(202).send({ message: "record_deleted" });
-            
-            res.status(304).send({ message: "record_not_deleted" }); 
-        });
-    }
-
-    catch (ex) {
-        res.status(500).send({ error: ex.message });
-    }
+module.exports = {
+  get,
+  load,
+  getHistoric,
+  remove
 };
