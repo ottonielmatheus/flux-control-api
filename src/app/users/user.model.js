@@ -5,7 +5,7 @@ const sql = require('../../db/database');
 const salt = 7;
 
 class User {
-    
+
     constructor (user, sensible = false) {
 
         this.id = user.id;
@@ -16,7 +16,6 @@ class User {
         this.inactive = user.inactive;
 
         if (!sensible) {
-            
             this.password = user.password;
             this.token_id = user.token_id;
         }
@@ -28,9 +27,9 @@ class User {
 
             sql.query(`SELECT * FROM users WHERE email = ? AND inactive = 0`,
             [this.email],
-            
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
 
                 let user = results[0];
@@ -40,9 +39,9 @@ class User {
                     user = new User(user);
 
                     crypt.compare(this.password, user.password, (error, passwordsMatch) => {
-        
+
                         if (error) throw error;
-        
+
                         result((passwordsMatch) ? new User(user) : null);
                     });
                 }
@@ -63,9 +62,9 @@ class User {
 
             sql.query(`SELECT * FROM users WHERE id = ?`,
             [this.id],
-            
+
             (error, results, field) => {
-        
+
                 if (error) throw error;
 
                 const user = results[0];
@@ -88,9 +87,9 @@ class User {
 
             sql.query(`SELECT * FROM users`,
             (error, results, field) => {
-        
+
                 if (error) throw error;
-                
+
                 result(results.map(user => new User(user, true)));
             });
         }
@@ -103,12 +102,12 @@ class User {
     add (result) {
 
         try {
-            
+
             sql.beginTransaction((error) => {
 
                 if (error) throw error;
 
-                sql.query(`INSERT INTO users 
+                sql.query(`INSERT INTO users
                     (id, name, email, role, created_at)
                     VALUES (?, ?, ?, ?, ?)`,
                 [
@@ -120,9 +119,9 @@ class User {
                 ],
 
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result({
                         id: results.insertId,
@@ -153,11 +152,11 @@ class User {
                     SET name = ?, email = ?, role = ?
                     WHERE id = ?`,
                 [this.name, this.email, this.role, this.id],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-                    
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });
@@ -173,28 +172,28 @@ class User {
     requestPassword (result) {
 
         try {
-            
+
             sql.beginTransaction((error) => {
 
                 if (error) throw error;
-    
+
                 const now = new Date();
                 const token = { id: random.id(), expires: now.addHours(process.env.TOKEN_EXPIRES) };
-            
+
                 sql.query(`INSERT INTO tokens (id, expires) VALUES (?, ?)`,
                 [token.id, token.expires],
-                
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.query(`UPDATE users
                                 SET token_id = ?
                                 WHERE id = ?`,
                     [token.id, this.id],
-                    
+
                     (error, results, field) => {
-            
+
                         if (error) throw error;
 
                         sql.commit();
@@ -261,14 +260,14 @@ class User {
                 if (error) throw error;
 
                 sql.query(`UPDATE FROM users
-                            SET inactive = 1 
+                            SET inactive = 1
                             WHERE id = ?`,
                 [this.id],
-            
+
                 (error, results, field) => {
-            
+
                     if (error) throw error;
-            
+
                     sql.commit();
                     result(results.changedRows > 0);
                 });
